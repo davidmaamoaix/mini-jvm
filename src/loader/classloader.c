@@ -1,5 +1,6 @@
 #include "classloader.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 uint8_t readbytes_1(Reader *reader) {
@@ -21,6 +22,8 @@ uint64_t readbytes_8(Reader *reader) {
 Reader *readClass(const char *path) {
     Reader *reader = malloc(sizeof(reader));
     reader->reg = 0;
+
+    FILE *file = fopen(path, "rb");
 
     return reader;
 }
