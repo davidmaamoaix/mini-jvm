@@ -6,6 +6,14 @@
 #include "util/debug.h"
 
 uint8_t readbytes_1(Reader *reader) {
+    if (reader->reg == reader->end) {
+        printf("[ERROR] End of file reached.");
+        reader->error = 1;
+        return 0;
+    }
+
+    if (reader->error) return 0;
+
     return reader->bytes[reader->reg++];
 }
 
@@ -22,15 +30,16 @@ uint64_t readbytes_8(Reader *reader) {
 }
 
 Reader *readClass(const char *path) {
-    Reader *reader = malloc(sizeof(reader));
-    reader->reg = 0;
-
     FILE *file = fopen(path, "rb");
 
     if (!file) {
         printf("[Error] The class file %s does not exist.\n", path);
         return NULL;
     }
+
+    Reader *reader = malloc(sizeof(reader));
+    reader->reg = 0;
+    reader->error = 0;
 
     fseek(file, 0, SEEK_END);
     reader->end = ftell(file);
@@ -44,15 +53,19 @@ Reader *readClass(const char *path) {
     return reader;
 }
 
-void loadClass(const char *path) {
+Class *loadClass(const char *path) {
     Reader *reader = readClass(path);
 
     if (readbytes_4(reader) != 0xCAFEBABE) {
         printf("[Error] The file %s is not a Java class file.", path);
-        return;
+        return NULL;
     }
 
-    VERBOSE("Loading Java class file: %s", path);
+    VERBOSE("Loading Java class file: %s\n", path);
 
+    Class *class = malloc(sizeof(Class));
+    class->minor = readbytes_2(reader);
+    class->major = readbytes_2(reader);
 
+    VERBOSE("Class file format version: %d %d", class->major, class->minor);
 }
