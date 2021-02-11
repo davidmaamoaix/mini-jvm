@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "util/debug.h"
+
 uint8_t readbytes_1(Reader *reader) {
     return reader->bytes[reader->reg++];
 }
@@ -25,5 +27,32 @@ Reader *readClass(const char *path) {
 
     FILE *file = fopen(path, "rb");
 
+    if (!file) {
+        printf("[Error] The class file %s does not exist.\n", path);
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    reader->end = ftell(file);
+    rewind(file);
+
+    reader->bytes = malloc((unsigned long) (reader->end + 1) * sizeof(char));
+    fread(reader->bytes, sizeof(char), (unsigned long) reader->end, file);
+    fclose(file);
+
+    reader->bytes[reader->end] = '\0';
     return reader;
+}
+
+void loadClass(const char *path) {
+    Reader *reader = readClass(path);
+
+    if (readbytes_4(reader) != 0xCAFEBABE) {
+        printf("[Error] The file %s is not a Java class file.", path);
+        return;
+    }
+
+    VERBOSE("Loading Java class file: %s", path);
+
+
 }

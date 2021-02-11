@@ -1,6 +1,11 @@
 #include <stdio.h>
 
+#include "loader/classloader.h"
+
+#define DEBUG 1
+
 int main() {
-    printf("Hello, World!\n");
+    loadClass("Foo.class");
+
     return 0;
 }

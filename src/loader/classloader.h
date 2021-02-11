@@ -5,8 +5,8 @@
 
 typedef struct Reader {
     unsigned char *bytes;
-    uint16_t reg;
-    uint16_t end;
+    long reg;
+    long end;
 } Reader;
 
 uint8_t readbytes_1(Reader *);
@@ -15,5 +15,6 @@ uint32_t readbytes_4(Reader *);
 uint64_t readbytes_8(Reader *);
 
 Reader *readClass(const char *);
+void loadClass(const char *);
 
 #endif //MINIJVM_CLASSLOADER_H
