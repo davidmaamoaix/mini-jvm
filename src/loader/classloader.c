@@ -84,7 +84,6 @@ Class *loadClass(const char *path) {
     VERBOSE("Reading constant pool of size %d\n", class->constPoolSize);
 
     class->constPool = readConstPool(reader, class->constPoolSize);
-    printf("%ld\n", reader->error);
 
     // the error is specified during the reader->err = 1
     if (reader->error) {
