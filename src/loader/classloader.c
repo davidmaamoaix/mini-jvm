@@ -47,7 +47,7 @@ Reader *readClass(const char *path) {
         return NULL;
     }
 
-    Reader *reader = malloc(sizeof(reader));
+    Reader *reader = malloc(sizeof(Reader));
     reader->reg = 0;
     reader->error = 0;
 
@@ -84,8 +84,9 @@ Class *loadClass(const char *path) {
     VERBOSE("Reading constant pool of size %d\n", class->constPoolSize);
 
     class->constPool = readConstPool(reader, class->constPoolSize);
+    printf("%ld\n", reader->error);
 
-    // the error is specified during the reader->error = 1
+    // the error is specified during the reader->err = 1
     if (reader->error) {
         printf("Loading class %s failed\n", path);
 
@@ -147,9 +148,11 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
             case CONSTANT_MethodHandle:
                 constPool[i].value = (uint32_t) readbytes_1(reader) << 8;
                 constPool[i].value |= readbytes_2(reader);
+                break;
             default:
                 reader->error = 1;
                 printf("Unexpected constant tag: %d", constPool[i].tag);
+                break;
         }
     }
 

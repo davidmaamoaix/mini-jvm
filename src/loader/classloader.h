@@ -9,7 +9,7 @@ typedef struct Reader {
     unsigned char *bytes;
     long reg;
     long end;
-    int error;
+    long error;
 } Reader;
 
 uint8_t readbytes_1(Reader *);
