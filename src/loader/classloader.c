@@ -68,4 +68,6 @@ Class *loadClass(const char *path) {
     class->major = readbytes_2(reader);
 
     VERBOSE("Class file format version: %d %d", class->major, class->minor);
+
+    class->constPoolSize = readbytes_2(reader);
 }
