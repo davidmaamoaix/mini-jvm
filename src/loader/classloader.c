@@ -84,9 +84,22 @@ Class *loadClass(const char *path) {
     VERBOSE("Reading constant pool of size %d\n", class->constPoolSize);
 
     class->constPool = readConstPool(reader, class->constPoolSize);
+
+    // the error is specified during the reader->error = 1
+    if (reader->error) {
+        printf("Loading class %s failed\n", path);
+
+        free(class);
+
+        return NULL;
+    }
+
+    return class;
 }
 
 Constant *readConstPool(Reader *reader, uint16_t size) {
+
+    if (reader->error) return NULL;
 
     // constant pool index starts at 1
     Constant *constPool = malloc((size + 1) * sizeof(Constant));
@@ -111,9 +124,32 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
                 break;
             case CONSTANT_Class:
             case CONSTANT_String:
-                // both are treated similarly; index of UTF-8
+            case CONSTANT_MethodType:
+                // all are treated similarly:
+                // class & str: index of UTF-8
+                // methodType: descriptor index
                 constPool[i].value = readbytes_2(reader);
+                break;
+            case CONSTANT_Fieldref:
+            case CONSTANT_Methodref:
+            case CONSTANT_InterfaceMethodref:
+            case CONSTANT_NameAndType:
+            case CONSTANT_InvokeDynamic:
+                // abuse the 4 bytes int to store 2 2 bytes int,
+                // corresponding to name_index and descriptor/type index
 
+                // in the case of invokeDynamic, 2 bytes are dedicated to
+                // an index in the bootstrap method table, and 2 bytes to
+                // an index to nameAndType in the constant poolg
+                constPool[i].value = (uint32_t) readbytes_2(reader) << 8;
+                constPool[i].value |= readbytes_2(reader);
+                break;
+            case CONSTANT_MethodHandle:
+                constPool[i].value = (uint32_t) readbytes_1(reader) << 8;
+                constPool[i].value |= readbytes_2(reader);
+            default:
+                reader->error = 1;
+                printf("Unexpected constant tag: %d", constPool[i].tag);
         }
     }
 

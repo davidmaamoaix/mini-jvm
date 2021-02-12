@@ -15,7 +15,7 @@
 #define CONSTANT_String 8
 #define CONSTANT_Fieldref 9
 #define CONSTANT_Methodref 10
-#define CONSTANT_CONSTANT_InterfaceMethodref 11
+#define CONSTANT_InterfaceMethodref 11
 #define CONSTANT_NameAndType 12
 #define CONSTANT_MethodHandle 15
 #define CONSTANT_MethodType 16
