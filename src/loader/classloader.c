@@ -29,6 +29,16 @@ uint64_t readbytes_8(Reader *reader) {
     return (uint64_t) readbytes_4(reader) << 32 | readbytes_4(reader);
 }
 
+const unsigned char *readBytes(Reader *reader, uint16_t size) {
+    unsigned char *bytes = malloc(size * sizeof(unsigned char));
+
+    for (uint16_t i = 0; i < size; ++i) {
+        bytes[i] = readbytes_1(reader);
+    }
+
+    return bytes;
+}
+
 Reader *readClass(const char *path) {
     FILE *file = fopen(path, "rb");
 
@@ -67,7 +77,23 @@ Class *loadClass(const char *path) {
     class->minor = readbytes_2(reader);
     class->major = readbytes_2(reader);
 
-    VERBOSE("Class file format version: %d %d", class->major, class->minor);
+    VERBOSE("Class file format version: %d %d\n", class->major, class->minor);
 
     class->constPoolSize = readbytes_2(reader);
+
+    VERBOSE("Reading constant pool of size %d\n", class->constPoolSize);
+
+    class->constPool = readConstPool(class->constPoolSize, reader);
+}
+
+Constant *readConstPool(uint16_t size, Reader *reader) {
+
+    // constant pool index starts at 1
+    Constant *constPool = malloc((size + 1) * sizeof(Constant));
+
+    for (int i = 1; i < size; ++i) {
+        constPool[i].tag = readbytes_1(reader);
+
+        
+    }
 }
