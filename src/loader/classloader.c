@@ -83,10 +83,10 @@ Class *loadClass(const char *path) {
 
     VERBOSE("Reading constant pool of size %d\n", class->constPoolSize);
 
-    class->constPool = readConstPool(class->constPoolSize, reader);
+    class->constPool = readConstPool(reader, class->constPoolSize);
 }
 
-Constant *readConstPool(uint16_t size, Reader *reader) {
+Constant *readConstPool(Reader *reader, uint16_t size) {
 
     // constant pool index starts at 1
     Constant *constPool = malloc((size + 1) * sizeof(Constant));
@@ -94,6 +94,28 @@ Constant *readConstPool(uint16_t size, Reader *reader) {
     for (int i = 1; i < size; ++i) {
         constPool[i].tag = readbytes_1(reader);
 
-        
+        switch (constPool[i].tag) {
+            case CONSTANT_Utf8:
+                constPool[i].strLen = readbytes_2(reader);
+                constPool[i].string = readBytes(reader, constPool[i].strLen);
+                break;
+            case CONSTANT_Integer:
+            case CONSTANT_Float:
+                constPool[i].value = readbytes_4(reader);
+                break;
+            case CONSTANT_Long:
+            case CONSTANT_Double:
+                // long and double takes up 2 entries
+                constPool[i].value = readbytes_4(reader);
+                constPool[++i].value = readbytes_4(reader);
+                break;
+            case CONSTANT_Class:
+            case CONSTANT_String:
+                // both are treated similarly; index of UTF-8
+                constPool[i].value = readbytes_2(reader);
+
+        }
     }
+
+    return constPool;
 }

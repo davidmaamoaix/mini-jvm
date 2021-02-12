@@ -21,6 +21,6 @@ const unsigned char *readBytes(Reader *, uint16_t);
 Reader *readClass(const char *);
 Class *loadClass(const char *);
 
-Constant *readConstPool(uint16_t, Reader *);
+Constant *readConstPool(Reader *, uint16_t);
 
 #endif //MINIJVM_CLASSLOADER_H
