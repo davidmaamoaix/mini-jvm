@@ -29,7 +29,7 @@ typedef struct Constant {
     uint32_t value;
 
     uint16_t strLen;
-    const unsigned char *string;
+    unsigned char *string;
 } Constant;
 
 #endif //MINIJVM_CONST_POOL_H

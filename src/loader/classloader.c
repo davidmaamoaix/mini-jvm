@@ -7,8 +7,8 @@
 
 uint8_t readbytes_1(Reader *reader) {
     if (reader->reg == reader->end) {
-        printf("[ERROR] End of file reached.");
         reader->error = 1;
+        printf("[ERROR] End of file reached.");
         return 0;
     }
 
@@ -29,7 +29,7 @@ uint64_t readbytes_8(Reader *reader) {
     return (uint64_t) readbytes_4(reader) << 32 | readbytes_4(reader);
 }
 
-const unsigned char *readBytes(Reader *reader, uint16_t size) {
+unsigned char *readBytes(Reader *reader, uint16_t size) {
     unsigned char *bytes = malloc(size * sizeof(unsigned char));
 
     for (uint16_t i = 0; i < size; ++i) {
@@ -67,17 +67,26 @@ Class *loadClass(const char *path) {
     Reader *reader = readClass(path);
 
     if (readbytes_4(reader) != 0xCAFEBABE) {
-        printf("[Error] The file %s is not a Java class file.", path);
+        printf("[Error] The file %s is not a Java class file", path);
         return NULL;
     }
 
     VERBOSE("Loading Java class file: %s\n", path);
 
     Class *class = malloc(sizeof(Class));
+
+    if (class == NULL) {
+        reader->error = 1;
+        printf("[Error] Malloc failed for class initialization\n");
+        return NULL;
+    }
+
     class->minor = readbytes_2(reader);
     class->major = readbytes_2(reader);
 
     VERBOSE("Class file format version: %d %d\n", class->major, class->minor);
+
+    // reading constant pool
 
     class->constPoolSize = readbytes_2(reader);
 
@@ -85,10 +94,23 @@ Class *loadClass(const char *path) {
 
     class->constPool = readConstPool(reader, class->constPoolSize);
 
+    //reading interfaces
+
+    class->interfaceCount = readbytes_2(reader);
+
+    VERBOSE("Reading %d interfaces\n", class->interfaceCount);
+
+    class->interfaces = readInterfaces(reader, class->interfaceCount);
+
     // the error is specified during the reader->err = 1
     if (reader->error) {
         printf("Loading class %s failed\n", path);
 
+        // free all allocated pools; free calls have null checks
+        // so redundant freeing doesn't matter as much
+        //
+        // TODO: use a better error checking mechanism
+        freeConstPool(class->constPool, class->constPoolSize);
         free(class);
 
         return NULL;
@@ -103,6 +125,12 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
 
     // constant pool index starts at 1
     Constant *constPool = malloc((size + 1) * sizeof(Constant));
+
+    if (constPool == NULL) {
+        reader->error = 1;
+        printf("[Error] Malloc failed for const pool initialization");
+        return NULL;
+    }
 
     for (int i = 1; i < size; ++i) {
         constPool[i].tag = readbytes_1(reader);
@@ -151,9 +179,39 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
             default:
                 reader->error = 1;
                 printf("Unexpected constant tag: %d", constPool[i].tag);
-                break;
+                freeConstPool(constPool, size);
+                return NULL;
         }
     }
 
     return constPool;
+}
+
+void freeConstPool(Constant *constPool, uint16_t size) {
+
+    if (constPool == NULL) return;
+
+    // free all allocated strings in the const table
+    for (uint16_t i = 1; i < size; ++i) {
+        if (constPool[i].tag == CONSTANT_Utf8) {
+            free(constPool[i].string);
+        }
+    }
+
+    free(constPool);
+}
+
+Interface *readInterfaces(Reader *reader, uint16_t size) {
+
+    if (reader->error) return NULL;
+
+    Interface *interfaces = malloc(size * sizeof(Interface));
+
+    // unlike the constant pool, the interface pool
+    // starts at index 0
+    for (uint16_t i = 0; i < size; ++i) {
+        interfaces[i] = readbytes_2(reader);
+    }
+
+    return interfaces;
 }

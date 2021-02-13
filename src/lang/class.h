@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 
+#include "lang/class_member.h"
 #include "lang/internal/const_pool.h"
 
 typedef struct Class {
@@ -14,6 +15,10 @@ typedef struct Class {
     // constant pool
     uint16_t constPoolSize;
     Constant *constPool;
+
+    //interfaces
+    uint16_t interfaceCount;
+    Interface *interfaces;
 } Class;
 
 #endif //MINIJVM_CLASS_H
