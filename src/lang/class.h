@@ -16,6 +16,13 @@ typedef struct Class {
     uint16_t constPoolSize;
     Constant *constPool;
 
+    // access flags (a mask specifying the class modifiers)
+    uint16_t accessFlags;
+
+    // index to classes in the constant pool
+    uint16_t thisClass;
+    uint16_t superClass; // 0 in case of the Object class
+
     //interfaces
     uint16_t interfaceCount;
     Interface *interfaces;

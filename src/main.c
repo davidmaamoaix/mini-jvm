@@ -7,7 +7,7 @@
 int main() {
     Class *class = loadClass("Foo.class");
 
-    printf("%d\n", class->interfaces[5]);
+    printf("%d\n", class->superClass);
 
     return 0;
 }

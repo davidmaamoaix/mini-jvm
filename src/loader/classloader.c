@@ -81,12 +81,14 @@ Class *loadClass(const char *path) {
         return NULL;
     }
 
+    // class format version
+
     class->minor = readbytes_2(reader);
     class->major = readbytes_2(reader);
 
     VERBOSE("Class file format version: %d %d\n", class->major, class->minor);
 
-    // reading constant pool
+    // constant pool
 
     class->constPoolSize = readbytes_2(reader);
 
@@ -94,7 +96,15 @@ Class *loadClass(const char *path) {
 
     class->constPool = readConstPool(reader, class->constPoolSize);
 
-    //reading interfaces
+    // access flags
+
+    class->accessFlags = readbytes_2(reader);
+
+    // class hierarchy
+    class->thisClass = readbytes_2(reader);
+    class->superClass = readbytes_2(reader);
+
+    // interfaces
 
     class->interfaceCount = readbytes_2(reader);
 

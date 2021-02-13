@@ -1,0 +1,14 @@
+#ifndef MINIJVM_FLAGS_H
+#define MINIJVM_FLAGS_H
+
+// class access flags
+#define ACC_PUBLIC 0x0001
+#define ACC_FINAL 0x0010
+#define ACC_SUPER 0x0020
+#define ACC_INTERFACE 0x0200
+#define ACC_ABSTRACT 0x0400
+#define ACC_SYNTHETIC 0x1000
+#define ACC_ANNOTATION 0x2000
+#define ACC_ENUM 0x4000
+
+#endif //MINIJVM_FLAGS_H
