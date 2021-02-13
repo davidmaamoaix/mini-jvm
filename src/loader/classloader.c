@@ -141,11 +141,11 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
                 // in the case of invokeDynamic, 2 bytes are dedicated to
                 // an index in the bootstrap method table, and 2 bytes to
                 // an index to nameAndType in the constant poolg
-                constPool[i].value = (uint32_t) readbytes_2(reader) << 8;
+                constPool[i].value = (uint32_t) readbytes_2(reader) << 16;
                 constPool[i].value |= readbytes_2(reader);
                 break;
             case CONSTANT_MethodHandle:
-                constPool[i].value = (uint32_t) readbytes_1(reader) << 8;
+                constPool[i].value = (uint32_t) readbytes_1(reader) << 16;
                 constPool[i].value |= readbytes_2(reader);
                 break;
             default:

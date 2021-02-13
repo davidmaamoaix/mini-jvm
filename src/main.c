@@ -5,7 +5,7 @@
 #define DEBUG 1
 
 int main() {
-    loadClass("Foo.class");
+    Class *class = loadClass("Foo.class");
 
 
 
