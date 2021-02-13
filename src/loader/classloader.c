@@ -112,12 +112,23 @@ Class *loadClass(const char *path) {
 
     class->interfaces = readInterfaces(reader, class->interfaceCount);
 
+    // fields
+
+    class->fieldCount = readbytes_2(reader);
+
+    VERBOSE("Reading %d fields\n", class->fieldCount);
+
+    class->fields = readFields(reader, class->fieldCount);
+
     // the error is specified during the reader->err = 1
     if (reader->error) {
         printf("Loading class %s failed\n", path);
 
         // free all allocated pools; free calls have null checks
-        // so redundant freeing doesn't matter as much
+        // so redundant freeing doesn't matter as much; null
+        // checks are fine since in each sub-reading function
+        // the return type is specifically NULL if an error
+        // is encountered
         //
         // TODO: use a better error checking mechanism
         freeConstPool(class->constPool, class->constPoolSize);
@@ -138,7 +149,7 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
 
     if (constPool == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed for const pool initialization");
+        printf("[Error] Malloc failed for const pool initialization\n");
         return NULL;
     }
 
@@ -188,7 +199,7 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
                 break;
             default:
                 reader->error = 1;
-                printf("Unexpected constant tag: %d", constPool[i].tag);
+                printf("Unexpected constant tag: %d\n", constPool[i].tag);
                 freeConstPool(constPool, size);
                 return NULL;
         }
@@ -217,6 +228,12 @@ Interface *readInterfaces(Reader *reader, uint16_t size) {
 
     Interface *interfaces = malloc(size * sizeof(Interface));
 
+    if (interfaces == NULL) {
+        reader->error = 1;
+        printf("[Error] Malloc failed for reading interfaces\n");
+        return NULL;
+    }
+
     // unlike the constant pool, the interface pool
     // starts at index 0
     for (uint16_t i = 0; i < size; ++i) {
@@ -224,4 +241,67 @@ Interface *readInterfaces(Reader *reader, uint16_t size) {
     }
 
     return interfaces;
+}
+
+Field *readFields(Reader *reader, uint16_t size) {
+
+    if (reader->error) return NULL;
+
+    Field *fields = malloc(size * sizeof(Field));
+
+    if (fields == NULL) {
+        reader->error = 1;
+        printf("[Error] Malloc failed for fields initialization\n");
+        return NULL;
+    }
+
+    for (uint16_t i = 0; i < size; ++i) {
+        fields[i].accessFlag = readbytes_2(reader);
+        fields[i].nameIndex = readbytes_2(reader);
+        fields[i].descriptorIndex = readbytes_2(reader);
+        fields[i].attrCount = readbytes_2(reader);
+
+        fields->attrs = readAttrs(reader, fields[i].attrCount);
+    }
+
+    return fields;
+}
+
+Attribute *readAttrs(Reader *reader, uint16_t size) {
+
+    if (reader->error) return NULL;
+
+    Attribute *attrs = malloc(size * sizeof(Attribute));
+
+    if (attrs == NULL) {
+        reader->error = 1;
+        printf("[Error] Malloc failed during reading attribute info\n");
+        return NULL;
+    }
+
+    for (uint16_t i = 0; i < size; ++i) {
+        attrs[i].attrIndex = readbytes_2(reader);
+        attrs[i].attrLen = readbytes_4(reader);
+
+        attrs[i].info = malloc(attrs[i].attrLen * sizeof(uint8_t));
+
+        if (attrs[i].info == NULL) {
+            reader->error = 1;
+            printf("[Error] Malloc failed during attribute info");
+
+            for (uint16_t delIndex = 0; delIndex < i; ++delIndex) {
+                free(attrs[i].info);
+            }
+
+            free(attrs);
+
+            return NULL;
+        }
+
+        for (uint16_t byteId = 0; byteId < attrs[i].attrLen; ++byteId) {
+            attrs[i].info[i] = readbytes_1(reader);
+        }
+    }
+
+    return attrs;
 }

@@ -2,7 +2,7 @@
 
 #include "loader/classloader.h"
 
-#define DEBUG 1
+#define DEBUG
 
 int main() {
     Class *class = loadClass("Foo.class");

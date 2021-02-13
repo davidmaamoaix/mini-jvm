@@ -23,9 +23,13 @@ typedef struct Class {
     uint16_t thisClass;
     uint16_t superClass; // 0 in case of the Object class
 
-    //interfaces
+    // interfaces
     uint16_t interfaceCount;
     Interface *interfaces;
+
+    // fields
+    uint16_t fieldCount;
+    Field *fields;
 } Class;
 
 #endif //MINIJVM_CLASS_H
