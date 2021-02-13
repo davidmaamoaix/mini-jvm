@@ -25,4 +25,8 @@ typedef struct Field {
     Attribute *attrs;
 } Field;
 
+typedef struct Method {
+    
+} Method;
+
 #endif //MINIJVM_CLASS_MEMBER_H

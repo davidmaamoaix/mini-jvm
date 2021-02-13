@@ -21,6 +21,7 @@ unsigned char *readBytes(Reader *, uint16_t);
 
 Reader *readClass(const char *);
 Class *loadClass(const char *);
+void freeClass(Class *);
 
 Constant *readConstPool(Reader *, uint16_t);
 void freeConstPool(Constant *, uint16_t);
@@ -30,5 +31,7 @@ Field *readFields(Reader *, uint16_t);
 void freeFields(Field *, uint16_t);
 Attribute *readAttrs(Reader *, uint16_t);
 void freeAttrs(Attribute *, uint16_t);
+
+Method *readMethods(Reader *, uint16_t);
 
 #endif //MINIJVM_CLASSLOADER_H

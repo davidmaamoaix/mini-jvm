@@ -120,6 +120,14 @@ Class *loadClass(const char *path) {
 
     class->fields = readFields(reader, class->fieldCount);
 
+    // methods
+
+    class->methodCount = readbytes_2(reader);
+
+    VERBOSE("Reading %d methods\n", class->methodCount);
+
+    class->methods = readMethods(reader, class->methodCount);
+
     // the error is specified during the reader->err = 1
     if (reader->error) {
         printf("Loading class %s failed\n", path);
@@ -131,13 +139,19 @@ Class *loadClass(const char *path) {
         // is encountered
         //
         // TODO: use a better error checking mechanism
-        freeConstPool(class->constPool, class->constPoolSize);
-        free(class);
+        freeClass(class);
 
         return NULL;
     }
 
     return class;
+}
+
+void freeClass(Class *class) {
+    freeConstPool(class->constPool, class->constPoolSize);
+    freeFields(class->fields, class->fieldCount);
+
+    free(class);
 }
 
 Constant *readConstPool(Reader *reader, uint16_t size) {
@@ -199,7 +213,10 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
                 break;
             default:
                 reader->error = 1;
-                printf("Unexpected constant tag: %d\n", constPool[i].tag);
+                printf(
+                    "[Error] Unexpected constant tag: %d\n",
+                    constPool[i].tag
+                );
                 freeConstPool(constPool, size);
                 return NULL;
         }
@@ -326,4 +343,21 @@ void freeAttrs(Attribute *attrs, uint16_t size) {
     }
 
     free(attrs);
+}
+
+Method *readMethods(Reader *reader, uint16_t size) {
+
+    if (reader->error) return NULL;
+
+    Method *methods = malloc(size * sizeof(Method));
+
+    if (methods == NULL) {
+        reader->error = 1;
+        printf("[Error] Malloc failed during initializing methods\n");
+        return NULL;
+    }
+
+    for (uint16_t i = 0; i < size; ++i) {
+
+    }
 }

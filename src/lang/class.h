@@ -30,6 +30,10 @@ typedef struct Class {
     // fields
     uint16_t fieldCount;
     Field *fields;
+
+    // methods
+    uint16_t methodCount;
+    Method *methods;
 } Class;
 
 #endif //MINIJVM_CLASS_H

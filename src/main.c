@@ -7,7 +7,8 @@
 int main() {
     Class *class = loadClass("Foo.class");
 
-    printf("%d\n", class->fields[0].descriptorIndex);
+
+    freeClass(class);
 
     return 0;
 }
