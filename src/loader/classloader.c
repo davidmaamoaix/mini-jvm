@@ -267,6 +267,17 @@ Field *readFields(Reader *reader, uint16_t size) {
     return fields;
 }
 
+void freeFields(Field *fields, uint16_t size) {
+
+    if (fields == NULL) return;
+
+    for (uint16_t i = 0; i < size; ++i) {
+        freeAttrs(fields[i].attrs, fields[i].attrCount);
+    }
+
+    free(fields);
+}
+
 Attribute *readAttrs(Reader *reader, uint16_t size) {
 
     if (reader->error) return NULL;
@@ -304,4 +315,15 @@ Attribute *readAttrs(Reader *reader, uint16_t size) {
     }
 
     return attrs;
+}
+
+void freeAttrs(Attribute *attrs, uint16_t size) {
+
+    if (attrs == NULL) return;
+
+    for (uint16_t i = 0; i < size; ++i) {
+        free(attrs[i].info);
+    }
+
+    free(attrs);
 }

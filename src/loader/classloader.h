@@ -27,6 +27,8 @@ void freeConstPool(Constant *, uint16_t);
 Interface *readInterfaces(Reader *, uint16_t);
 
 Field *readFields(Reader *, uint16_t);
+void freeFields(Field *, uint16_t);
 Attribute *readAttrs(Reader *, uint16_t);
+void freeAttrs(Attribute *, uint16_t);
 
 #endif //MINIJVM_CLASSLOADER_H
