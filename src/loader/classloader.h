@@ -5,33 +5,21 @@
 
 #include "lang/class.h"
 #include "lang/class_member.h"
+#include "util/bytestream.h"
 
-typedef struct Reader {
-    unsigned char *bytes;
-    long reg;
-    long end;
-    long error;
-} Reader;
-
-uint8_t readbytes_1(Reader *);
-uint16_t readbytes_2(Reader *);
-uint32_t readbytes_4(Reader *);
-uint64_t readbytes_8(Reader *);
-unsigned char *readBytes(Reader *, uint16_t);
-
-Reader *readClass(const char *);
+ByteStream *readClass(const char *);
 Class *loadClass(const char *);
 void freeClass(Class *);
 
-Constant *readConstPool(Reader *, uint16_t);
+Constant *readConstPool(ByteStream *, uint16_t);
 void freeConstPool(Constant *, uint16_t);
-Interface *readInterfaces(Reader *, uint16_t);
+Interface *readInterfaces(ByteStream *, uint16_t);
 
-Field *readFields(Reader *, uint16_t);
+Field *readFields(ByteStream *, uint16_t);
 void freeFields(Field *, uint16_t);
-Attribute *readAttrs(Reader *, uint16_t);
+Attribute *readAttrs(ByteStream *, uint16_t);
 void freeAttrs(Attribute *, uint16_t);
 
-Method *readMethods(Reader *, uint16_t);
+Method *readMethods(ByteStream *, uint16_t);
 
 #endif //MINIJVM_CLASSLOADER_H

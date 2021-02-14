@@ -5,41 +5,7 @@
 
 #include "util/debug.h"
 
-uint8_t readbytes_1(Reader *reader) {
-    if (reader->reg == reader->end) {
-        reader->error = 1;
-        ERROR("[Error] End of file reached\n");
-        exit(5);
-    }
-
-    if (reader->error) return 0;
-
-    return reader->bytes[reader->reg++];
-}
-
-uint16_t readbytes_2(Reader *reader) {
-    return (uint16_t) readbytes_1(reader) << 8 | readbytes_1(reader);
-}
-
-uint32_t readbytes_4(Reader *reader) {
-    return (uint32_t) readbytes_2(reader) << 16 | readbytes_2(reader);
-}
-
-uint64_t readbytes_8(Reader *reader) {
-    return (uint64_t) readbytes_4(reader) << 32 | readbytes_4(reader);
-}
-
-unsigned char *readBytes(Reader *reader, uint16_t size) {
-    unsigned char *bytes = malloc(size * sizeof(unsigned char));
-
-    for (uint16_t i = 0; i < size; ++i) {
-        bytes[i] = readbytes_1(reader);
-    }
-
-    return bytes;
-}
-
-Reader *readClass(const char *path) {
+ByteStream *readClass(const char *path) {
     FILE *file = fopen(path, "rb");
 
     if (!file) {
@@ -47,12 +13,11 @@ Reader *readClass(const char *path) {
         exit(2);
     }
 
-    Reader *reader = malloc(sizeof(Reader));
+    ByteStream *reader = malloc(sizeof(ByteStream));
     reader->reg = 0;
-    reader->error = 0;
 
     fseek(file, 0, SEEK_END);
-    reader->end = ftell(file);
+    reader->end = (uint32_t) ftell(file);
     rewind(file);
 
     reader->bytes = malloc((unsigned long) (reader->end + 1) * sizeof(char));
@@ -64,7 +29,7 @@ Reader *readClass(const char *path) {
 }
 
 Class *loadClass(const char *path) {
-    Reader *reader = readClass(path);
+    ByteStream *reader = readClass(path);
 
     if (readbytes_4(reader) != 0xCAFEBABE) {
         ERROR("[Error] The file %s is not a Java class file\n", path);
@@ -76,7 +41,6 @@ Class *loadClass(const char *path) {
     Class *class = malloc(sizeof(Class));
 
     if (class == NULL) {
-        reader->error = 1;
         ERROR("[Error] Malloc failed during class loading\n");
         exit(12);
     }
@@ -129,11 +93,11 @@ Class *loadClass(const char *path) {
     class->methods = readMethods(reader, class->methodCount);
 
     // the error is specified during the reader->err = 1
-    if (reader->error) {
+    /*if (reader->error) {
         ERROR("Loading class %s failed\n", path);
 
         exit(1);
-    }
+    }*/
 
     return class;
 }
@@ -145,15 +109,12 @@ void freeClass(Class *class) {
     free(class);
 }
 
-Constant *readConstPool(Reader *reader, uint16_t size) {
-
-    if (reader->error) return NULL;
+Constant *readConstPool(ByteStream *reader, uint16_t size) {
 
     // constant pool index starts at 1
     Constant *constPool = malloc((size + 1) * sizeof(Constant));
 
     if (constPool == NULL) {
-        reader->error = 1;
         ERROR("[Error] Malloc failed for constant pool\n");
         exit(12);
     }
@@ -203,13 +164,12 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
                 constPool[i].value |= readbytes_2(reader);
                 break;
             default:
-                reader->error = 1;
-                printf(
+                ERROR(
                     "[Error] Unexpected constant tag: %d\n",
                     constPool[i].tag
                 );
-                freeConstPool(constPool, size);
-                return NULL;
+
+                exit(1);
         }
     }
 
@@ -230,14 +190,11 @@ void freeConstPool(Constant *constPool, uint16_t size) {
     free(constPool);
 }
 
-Interface *readInterfaces(Reader *reader, uint16_t size) {
-
-    if (reader->error) return NULL;
+Interface *readInterfaces(ByteStream *reader, uint16_t size) {
 
     Interface *interfaces = malloc(size * sizeof(Interface));
 
     if (interfaces == NULL) {
-        reader->error = 1;
         ERROR("[Error] Malloc failed during reading interfaces\n");
         exit(12);
     }
@@ -251,14 +208,11 @@ Interface *readInterfaces(Reader *reader, uint16_t size) {
     return interfaces;
 }
 
-Field *readFields(Reader *reader, uint16_t size) {
-
-    if (reader->error) return NULL;
+Field *readFields(ByteStream *reader, uint16_t size) {
 
     Field *fields = malloc(size * sizeof(Field));
 
     if (fields == NULL) {
-        reader->error = 1;
         ERROR("[Error] Malloc failed during reading fields\n");
         exit(12);
     }
@@ -286,14 +240,11 @@ void freeFields(Field *fields, uint16_t size) {
     free(fields);
 }
 
-Attribute *readAttrs(Reader *reader, uint16_t size) {
-
-    if (reader->error) return NULL;
+Attribute *readAttrs(ByteStream *reader, uint16_t size) {
 
     Attribute *attrs = malloc(size * sizeof(Attribute));
 
     if (attrs == NULL) {
-        reader->error = 1;
         ERROR("[Error] Malloc failed during reading attributes\n");
         exit(12);
     }
@@ -305,7 +256,6 @@ Attribute *readAttrs(Reader *reader, uint16_t size) {
         attrs[i].info = malloc(attrs[i].attrLen * sizeof(uint8_t));
 
         if (attrs[i].info == NULL) {
-            reader->error = 1;
             ERROR("[Error] Malloc failed during attribute info\n");
 
             exit(12);
@@ -330,14 +280,11 @@ void freeAttrs(Attribute *attrs, uint16_t size) {
     free(attrs);
 }
 
-Method *readMethods(Reader *reader, uint16_t size) {
-
-    if (reader->error) return NULL;
+Method *readMethods(ByteStream *reader, uint16_t size) {
 
     Method *methods = malloc(size * sizeof(Method));
 
     if (methods == NULL) {
-        reader->error = 1;
         ERROR("[Error] Malloc failed during initializing methods\n");
         exit(12);
     }
