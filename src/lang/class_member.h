@@ -25,8 +25,14 @@ typedef struct Field {
     Attribute *attrs;
 } Field;
 
+// the struct is identical to Field, but distinguishing
+// them in case of additional data that are calculated
+// during read-time, or just space for debugging in general
 typedef struct Method {
-    
+    uint16_t accessFlag;
+    uint16_t nameIndex;
+    uint16_t descriptorIndex;
+    uint16_t attrCount;
 } Method;
 
 #endif //MINIJVM_CLASS_MEMBER_H

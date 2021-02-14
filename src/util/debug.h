@@ -7,4 +7,6 @@
 #define VERBOSE(...)
 #endif
 
+#define ERROR(format, args...) do { fprintf(stderr, format, ##args); } while (0)
+
 #endif //MINIJVM_DEBUG_H

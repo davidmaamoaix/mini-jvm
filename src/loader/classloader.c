@@ -8,8 +8,8 @@
 uint8_t readbytes_1(Reader *reader) {
     if (reader->reg == reader->end) {
         reader->error = 1;
-        printf("[ERROR] End of file reached.");
-        return 0;
+        ERROR("[Error] End of file reached\n");
+        exit(5);
     }
 
     if (reader->error) return 0;
@@ -43,8 +43,8 @@ Reader *readClass(const char *path) {
     FILE *file = fopen(path, "rb");
 
     if (!file) {
-        printf("[Error] The class file %s does not exist.\n", path);
-        return NULL;
+        ERROR("[Error] The class file %s does not exist.\n", path);
+        exit(2);
     }
 
     Reader *reader = malloc(sizeof(Reader));
@@ -67,8 +67,8 @@ Class *loadClass(const char *path) {
     Reader *reader = readClass(path);
 
     if (readbytes_4(reader) != 0xCAFEBABE) {
-        printf("[Error] The file %s is not a Java class file", path);
-        return NULL;
+        ERROR("[Error] The file %s is not a Java class file\n", path);
+        exit(1);
     }
 
     VERBOSE("Loading Java class file: %s\n", path);
@@ -77,8 +77,8 @@ Class *loadClass(const char *path) {
 
     if (class == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed for class initialization\n");
-        return NULL;
+        ERROR("[Error] Malloc failed during class loading\n");
+        exit(12);
     }
 
     // class format version
@@ -130,18 +130,9 @@ Class *loadClass(const char *path) {
 
     // the error is specified during the reader->err = 1
     if (reader->error) {
-        printf("Loading class %s failed\n", path);
+        ERROR("Loading class %s failed\n", path);
 
-        // free all allocated pools; free calls have null checks
-        // so redundant freeing doesn't matter as much; null
-        // checks are fine since in each sub-reading function
-        // the return type is specifically NULL if an error
-        // is encountered
-        //
-        // TODO: use a better error checking mechanism
-        freeClass(class);
-
-        return NULL;
+        exit(1);
     }
 
     return class;
@@ -163,8 +154,8 @@ Constant *readConstPool(Reader *reader, uint16_t size) {
 
     if (constPool == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed for const pool initialization\n");
-        return NULL;
+        ERROR("[Error] Malloc failed for constant pool\n");
+        exit(12);
     }
 
     for (int i = 1; i < size; ++i) {
@@ -247,8 +238,8 @@ Interface *readInterfaces(Reader *reader, uint16_t size) {
 
     if (interfaces == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed for reading interfaces\n");
-        return NULL;
+        ERROR("[Error] Malloc failed during reading interfaces\n");
+        exit(12);
     }
 
     // unlike the constant pool, the interface pool
@@ -268,8 +259,8 @@ Field *readFields(Reader *reader, uint16_t size) {
 
     if (fields == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed for fields initialization\n");
-        return NULL;
+        ERROR("[Error] Malloc failed during reading fields\n");
+        exit(12);
     }
 
     for (uint16_t i = 0; i < size; ++i) {
@@ -303,8 +294,8 @@ Attribute *readAttrs(Reader *reader, uint16_t size) {
 
     if (attrs == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed during reading attribute info\n");
-        return NULL;
+        ERROR("[Error] Malloc failed during reading attributes\n");
+        exit(12);
     }
 
     for (uint16_t i = 0; i < size; ++i) {
@@ -315,15 +306,9 @@ Attribute *readAttrs(Reader *reader, uint16_t size) {
 
         if (attrs[i].info == NULL) {
             reader->error = 1;
-            printf("[Error] Malloc failed during attribute info");
+            ERROR("[Error] Malloc failed during attribute info\n");
 
-            for (uint16_t delIndex = 0; delIndex < i; ++delIndex) {
-                free(attrs[i].info);
-            }
-
-            free(attrs);
-
-            return NULL;
+            exit(12);
         }
 
         for (uint16_t byteId = 0; byteId < attrs[i].attrLen; ++byteId) {
@@ -353,8 +338,8 @@ Method *readMethods(Reader *reader, uint16_t size) {
 
     if (methods == NULL) {
         reader->error = 1;
-        printf("[Error] Malloc failed during initializing methods\n");
-        return NULL;
+        ERROR("[Error] Malloc failed during initializing methods\n");
+        exit(12);
     }
 
     for (uint16_t i = 0; i < size; ++i) {
