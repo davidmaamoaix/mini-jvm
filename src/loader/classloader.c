@@ -343,6 +343,13 @@ Method *readMethods(Reader *reader, uint16_t size) {
     }
 
     for (uint16_t i = 0; i < size; ++i) {
+        methods[i].accessFlag = readbytes_2(reader);
+        methods[i].nameIndex = readbytes_2(reader);
+        methods[i].descriptorIndex = readbytes_2(reader);
+        methods[i].attrCount = readbytes_2(reader);
 
+        methods[i].attrs = readAttrs(reader, methods[i].attrCount);
     }
+
+    return methods;
 }
