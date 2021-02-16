@@ -34,6 +34,10 @@ typedef struct Class {
     // methods
     uint16_t methodCount;
     Method *methods;
+
+    // class attributes
+    uint16_t attrCount;
+    Attribute *attrs;
 } Class;
 
 #endif //MINIJVM_CLASS_H

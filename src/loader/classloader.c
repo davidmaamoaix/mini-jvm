@@ -92,6 +92,12 @@ Class *loadClass(const char *path) {
 
     class->methods = readMethods(reader, class->methodCount);
 
+    class->attrCount = readbytes_2(reader);
+
+    VERBOSE("Reading %d attributes\n", class->attrCount);
+
+    class->attrs = readAttrs(reader, class->attrCount);
+
     // the error is specified during the reader->err = 1
     /*if (reader->error) {
         ERROR("Loading class %s failed\n", path);
@@ -99,12 +105,25 @@ Class *loadClass(const char *path) {
         exit(1);
     }*/
 
+    if (reader->reg != reader->end) {
+        ERROR(
+            "Class ended at %d while the file is %d long\n",
+            reader->reg,
+            reader->end
+        );
+        exit(1);
+    }
+
+    free(reader->bytes);
+    free(reader);
+
     return class;
 }
 
 void freeClass(Class *class) {
     freeConstPool(class->constPool, class->constPoolSize);
     freeFields(class->fields, class->fieldCount);
+    freeMethods(class->methods, class->methodCount);
 
     free(class);
 }
@@ -299,4 +318,19 @@ Method *readMethods(ByteStream *reader, uint16_t size) {
     }
 
     return methods;
+}
+
+void freeMethods(Method *methods, uint16_t size) {
+
+    if (methods == NULL) return;
+
+    for (uint16_t i = 0; i < size; ++i) {
+        freeAttrs(methods[i].attrs, methods[i].attrCount);
+    }
+
+    free(methods);
+}
+
+uint8_t verifyClass(Class *class) {
+
 }

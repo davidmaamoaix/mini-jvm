@@ -21,5 +21,8 @@ Attribute *readAttrs(ByteStream *, uint16_t);
 void freeAttrs(Attribute *, uint16_t);
 
 Method *readMethods(ByteStream *, uint16_t);
+void freeMethods(Method *, uint16_t);
+
+uint8_t verifyClass(Class *);
 
 #endif //MINIJVM_CLASSLOADER_H

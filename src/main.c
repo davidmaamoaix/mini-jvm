@@ -6,8 +6,9 @@
 
 int main() {
     Class *class = loadClass("Foo.class");
+    uint8_t good = verifyClass(class);
 
-    printf("%d\n", class->methods[0].attrs[0].attrLen);
+    printf("%d\n", good);
 
     freeClass(class);
 
