@@ -420,7 +420,6 @@ void parseMethodCode(Class *class) {
                     ERROR("[Error] Code longer than expected at %s\n", methodName);
                 }
 
-                free(reader->bytes);
                 free(reader);
             }
         }
