@@ -23,6 +23,10 @@ void freeAttrs(Attribute *, uint16_t);
 Method *readMethods(ByteStream *, uint16_t);
 void freeMethods(Method *, uint16_t);
 
+// some non-definitive verification
 uint8_t verifyClass(Class *);
+
+// parse code of method attrs
+void parseMethodCode();
 
 #endif //MINIJVM_CLASSLOADER_H

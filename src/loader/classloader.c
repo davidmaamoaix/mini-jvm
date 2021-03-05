@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "util/debug.h"
 
@@ -104,6 +105,8 @@ Class *loadClass(const char *path) {
 
         exit(1);
     }*/
+
+    parseMethodCode(class);
 
     if (reader->reg != reader->end) {
         ERROR(
@@ -333,4 +336,29 @@ void freeMethods(Method *methods, uint16_t size) {
 
 uint8_t verifyClass(Class *class) {
 
+    // field attrs
+    for (uint16_t i = 0; i < class->fieldCount; ++i) {
+        // TODO: do this stuff
+    }
+
+    return 1;
+}
+
+void parseMethodCode(Class *class) {
+
+    for (uint16_t i = 0; i < class->methodCount; ++i) {
+        Method *method = &class->methods[i];
+
+        for (uint16_t attr = 0; attr < method->attrCount; ++attr) {
+            uint16_t attrIndex = method->attrs[attr].attrIndex;
+            Constant *tag = &class->constPool[attrIndex];
+
+            if (tag->tag == CONSTANT_Utf8 &&
+                strcmp((const char *) tag->string, "Code") == 0) {
+
+                unsigned char *methodName = class->constPool[method->nameIndex].string;
+                VERBOSE("Loading code for method %s\n", methodName);
+            }
+        }
+    }
 }
