@@ -40,6 +40,7 @@ typedef struct CodeAttr {
     uint8_t *code;
     uint16_t excTableLen;
     ExceptionBlock *excTable;
+    uint16_t attrCount;
     Attribute *attrs;
 } CodeAttr;
 

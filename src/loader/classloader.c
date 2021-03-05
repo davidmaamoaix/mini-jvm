@@ -15,6 +15,12 @@ ByteStream *readClass(const char *path) {
     }
 
     ByteStream *reader = malloc(sizeof(ByteStream));
+
+    if (reader == NULL) {
+        ERROR("[Error] Malloc failed during initializing class reader\n");
+        exit(12);
+    }
+
     reader->reg = 0;
 
     fseek(file, 0, SEEK_END);
@@ -284,7 +290,7 @@ Attribute *readAttrs(ByteStream *reader, uint16_t size) {
         }
 
         for (uint16_t byteId = 0; byteId < attrs[i].attrLen; ++byteId) {
-            attrs[i].info[i] = readbytes_1(reader);
+            attrs[i].info[byteId] = readbytes_1(reader);
         }
     }
 
@@ -357,7 +363,65 @@ void parseMethodCode(Class *class) {
                 strcmp((const char *) tag->string, "Code") == 0) {
 
                 unsigned char *methodName = class->constPool[method->nameIndex].string;
-                VERBOSE("Loading code for method %s\n", methodName);
+                VERBOSE(
+                    "\nLoading code of length %d for method %s:\n",
+                    method->attrs[attr].attrLen,
+                    methodName
+                );
+
+                ByteStream *reader = malloc(sizeof(ByteStream));
+
+                if (reader == NULL) {
+                    ERROR("[Error] Malloc failed during initializing code\n");
+                    exit(12);
+                }
+
+                reader->reg = 0;
+                reader->end = method->attrs[attr].attrLen;
+                reader->bytes = method->attrs[attr].info;
+
+                CodeAttr *code = &method->codeAttr;
+
+                code->maxStack = readbytes_2(reader);
+                code->maxLocals = readbytes_2(reader);
+                code->codeLen = readbytes_4(reader);
+
+                code->code = malloc(code->codeLen * sizeof(uint8_t));
+
+                if (code->code == NULL) {
+                    ERROR("[Error] Malloc failed during initializing code container\n");
+                    exit(12);
+                }
+
+                for (uint16_t j = 0; j < code->codeLen; ++j) {
+                    code->code[j] = readbytes_1(reader);
+                }
+
+                code->excTableLen = readbytes_2(reader);
+
+                code->excTable = malloc(code->excTableLen * sizeof(ExceptionBlock));
+
+                if (code->excTable == NULL) {
+                    ERROR("[Error] Malloc failed during initializing code exc\n");
+                    exit(12);
+                }
+
+                for (uint16_t j = 0; j < code->excTableLen; ++j) {
+                    code->excTable[j].startPos = readbytes_2(reader);
+                    code->excTable[j].endPos = readbytes_2(reader);
+                    code->excTable[j].handlerPos = readbytes_2(reader);
+                    code->excTable[j].catchType = readbytes_2(reader);
+                }
+
+                code->attrCount = readbytes_2(reader);
+                code->attrs = readAttrs(reader, code->attrCount);
+
+                if (reader->reg != reader->end) {
+                    ERROR("[Error] Code longer than expected at %s\n", methodName);
+                }
+
+                free(reader->bytes);
+                free(reader);
             }
         }
     }
