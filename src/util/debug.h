@@ -2,7 +2,7 @@
 #define MINIJVM_DEBUG_H
 
 #ifndef DEBUG
-#define VERBOSE(format, args...) do { printf(format, ##args); } while (0)
+#define VERBOSE(format, args...) do { fprintf(stdout, format, ##args); } while (0)
 #else
 #define VERBOSE(...)
 #endif

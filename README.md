@@ -1,4 +1,4 @@
 # mini-jvm
-A minimal Java Virtual Machine implementation.
+A toy Java Virtual Machine implementation.
 
-This is my attempt at implementing a minimal version of the JVM following its [specification](https://docs.oracle.com/javase/specs/jvms/se8/html/).
+This is my attempt at implementing a toy version of the JVM following its [specification](https://docs.oracle.com/javase/specs/jvms/se8/html/).
