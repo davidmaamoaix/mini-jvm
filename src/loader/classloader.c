@@ -386,6 +386,13 @@ void parseMethodCode(Class *class) {
                 code->maxLocals = readbytes_2(reader);
                 code->codeLen = readbytes_4(reader);
 
+                VERBOSE(
+                    "Stack size: %d\nLocal size: %d\nBytecode length: %d\n",
+                    code->maxStack,
+                    code->maxLocals,
+                    code->codeLen
+                );
+
                 code->code = malloc(code->codeLen * sizeof(uint8_t));
 
                 if (code->code == NULL) {
@@ -398,6 +405,8 @@ void parseMethodCode(Class *class) {
                 }
 
                 code->excTableLen = readbytes_2(reader);
+
+                VERBOSE("Exception handler count: %d\n", code->excTableLen);
 
                 code->excTable = malloc(code->excTableLen * sizeof(ExceptionBlock));
 
