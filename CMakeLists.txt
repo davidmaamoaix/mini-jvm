@@ -10,6 +10,7 @@ pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
 # linking an executable target for it.
 add_library(mini_jvm_lib
     src/utils/sreader.c
+    src/class_loader/class_reader.c
 )
 
 target_include_directories(mini_jvm_lib
@@ -33,3 +34,5 @@ target_link_libraries(mini_jvm
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+
+set_target_properties(mini_jvm_lib PROPERTIES C_EXTENSIONS OFF)
