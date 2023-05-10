@@ -76,6 +76,20 @@ err_vm sr_read_cp_info(sreader *reader, cp_info *info) {
 
 err_vm sr_read_attribute_info(sreader *reader, attribute_info *info) {
     err_vm ret_val = E_SUC;
+
+    E_PROP(sr_read_2(reader, &info->attribute_name_index));
+    E_PROP(sr_read_4(reader, &info->attribute_length));
+    info->info = malloc(info->attribute_length * sizeof(uint8_t));
+    E_MEM_PROP(info->info);
+    err_vm sig = sr_read_bytes(reader, info->attribute_length, info->info);
+    E_HANDLE(sig, ret_val, FREE_INFO);
+
+    goto END;
+
+FREE_INFO:
+    free(info->info);
+END:
+    return ret_val;
 }
 
 err_vm sr_read_attribs(sreader *reader, uint16_t size, attribute_info **list) {
@@ -97,9 +111,25 @@ END:
 }
 
 err_vm sr_read_field_info(sreader *reader, field_info *info) {
-    err_vm ret_val = E_SUC;
+    E_PROP(sr_read_2(reader, info->access_flags));
+    E_PROP(sr_read_2(reader, info->name_index));
+    E_PROP(sr_read_2(reader, info->descriptor_index));
+    E_PROP(sr_read_2(reader, info->attributes_count));
+    err_vm sig =
+        sr_read_attribs(reader, info->attributes_count, &info->attributes);
+    E_PROP(sig);
+
+    return E_SUC;
 }
 
 err_vm sr_read_method_info(sreader *reader, method_info *info) {
-    err_vm ret_val = E_SUC;
+    E_PROP(sr_read_2(reader, info->access_flags));
+    E_PROP(sr_read_2(reader, info->name_index));
+    E_PROP(sr_read_2(reader, info->descriptor_index));
+    E_PROP(sr_read_2(reader, info->attributes_count));
+    err_vm sig =
+        sr_read_attribs(reader, info->attributes_count, &info->attributes);
+    E_PROP(sig);
+
+    return E_SUC;
 }
