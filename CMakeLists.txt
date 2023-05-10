@@ -11,6 +11,7 @@ pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
 add_library(mini_jvm_lib
     src/utils/sreader.c
     src/class_loader/class_reader.c
+    src/utils/file_io.c
 )
 
 target_include_directories(mini_jvm_lib

@@ -72,6 +72,8 @@ END:
 
 err_vm sr_read_cp_info(sreader *reader, cp_info *info) {
     err_vm ret_val = E_SUC;
+
+    return ret_val;
 }
 
 err_vm sr_read_attribute_info(sreader *reader, attribute_info *info) {
@@ -111,10 +113,10 @@ END:
 }
 
 err_vm sr_read_field_info(sreader *reader, field_info *info) {
-    E_PROP(sr_read_2(reader, info->access_flags));
-    E_PROP(sr_read_2(reader, info->name_index));
-    E_PROP(sr_read_2(reader, info->descriptor_index));
-    E_PROP(sr_read_2(reader, info->attributes_count));
+    E_PROP(sr_read_2(reader, &info->access_flags));
+    E_PROP(sr_read_2(reader, &info->name_index));
+    E_PROP(sr_read_2(reader, &info->descriptor_index));
+    E_PROP(sr_read_2(reader, &info->attributes_count));
     err_vm sig =
         sr_read_attribs(reader, info->attributes_count, &info->attributes);
     E_PROP(sig);
@@ -123,10 +125,10 @@ err_vm sr_read_field_info(sreader *reader, field_info *info) {
 }
 
 err_vm sr_read_method_info(sreader *reader, method_info *info) {
-    E_PROP(sr_read_2(reader, info->access_flags));
-    E_PROP(sr_read_2(reader, info->name_index));
-    E_PROP(sr_read_2(reader, info->descriptor_index));
-    E_PROP(sr_read_2(reader, info->attributes_count));
+    E_PROP(sr_read_2(reader, &info->access_flags));
+    E_PROP(sr_read_2(reader, &info->name_index));
+    E_PROP(sr_read_2(reader, &info->descriptor_index));
+    E_PROP(sr_read_2(reader, &info->attributes_count));
     err_vm sig =
         sr_read_attribs(reader, info->attributes_count, &info->attributes);
     E_PROP(sig);
