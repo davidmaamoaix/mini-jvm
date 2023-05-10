@@ -1,3 +1,6 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+
 AlignConsecutiveMacros:
   Enabled: true
   AcrossEmptyLines: true
