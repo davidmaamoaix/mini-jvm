@@ -4,4 +4,4 @@ IndentWidth: 4
 AlignConsecutiveMacros:
   Enabled: true
   AcrossEmptyLines: true
-  AcrossComments: false
+  AcrossComments: true
