@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO: refractor this shit pile
+// TODO: refractor this shit pile, 11pm coding is bad for ya
 int64_t f_read_bytes(const char *filename, uint8_t **buffer) {
     int64_t size;
     FILE *file = fopen(filename, "rb");
