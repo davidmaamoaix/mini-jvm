@@ -127,38 +127,49 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
     }
 
     case CONSTANT_Class: {
+        E_PROP(sr_read_2(reader, &info->data.class_info.name_index));
         break;
     }
 
     case CONSTANT_String: {
+        E_PROP(sr_read_2(reader, &info->data.string_info.string_index));
         break;
     }
 
-    case CONSTANT_Fieldref: {
-        break;
-    }
-
-    case CONSTANT_Methodref: {
-        break;
-    }
-    
+    case CONSTANT_Fieldref:
+    case CONSTANT_Methodref:
     case CONSTANT_InterfaceMethodref: {
+        E_PROP(sr_read_2(reader, &info->data.ref_info.class_index));
+        E_PROP(sr_read_2(reader, &info->data.ref_info.name_and_type_index));
         break;
     }
 
     case CONSTANT_NameAndType: {
+        E_PROP(sr_read_2(reader, &info->data.name_and_type_info.name_index));
+        uint16_t *desc_ptr = &info->data.name_and_type_info.descriptor_index;
+        E_PROP(sr_read_2(reader, desc_ptr));
         break;
     }
 
     case CONSTANT_MethodHandle: {
-        break;
+        uint16_t *ref_kind_ptr = &info->data.method_handle_info.reference_kind;
+        uint16_t *ref_idx_ptr = &info->data.method_handle_info.reference_index;
+        E_PROP(sr_read_2(reader, ref_kind_ptr));
+        E_PROP(sr_read_2(reader, ref_idx_ptr));
     }
 
     case CONSTANT_MethodType: {
+        uint16_t *desc_ptr = &info->data.method_type_info.descriptor_index;
+        E_PROP(sr_read_2(reader, desc_ptr));
         break;
     }
 
     case CONSTANT_InvokeDynamic: {
+        uint16_t *attr_ptr =
+            &info->data.invoke_dynamic_info.bootstrap_method_attr_index;
+        uint16_t *tp_ptr = &info->data.invoke_dynamic_info.name_and_type_index;
+        E_PROP(sr_read_2(reader, attr_ptr));
+        E_PROP(sr_read_2(reader, tp_ptr));
         break;
     }
 
