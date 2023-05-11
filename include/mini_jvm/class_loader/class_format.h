@@ -25,16 +25,27 @@ typedef struct {
     uint16_t string_index;
 } cf_cp_string;
 
-// CONSTANT_Integer_info, CONSTANT_Float_info
+// CONSTANT_Integer_info
 typedef struct {
     uint32_t bytes;
-} cf_cp_number;
+} cf_cp_integer;
 
-// CONSTANT_Long_info, CONSTANT_Double_info
+// CONSTANT_Float_info
+typedef struct {
+    uint32_t bytes;
+} cf_cp_float;
+
+// CONSTANT_Long_info
 typedef struct {
     uint32_t high_bytes;
     uint32_t low_bytes;
-} cf_cp_large_number;
+} cf_cp_long;
+
+// CONSTANT_Double_info
+typedef struct {
+    uint32_t high_bytes;
+    uint32_t low_bytes;
+} cf_cp_double;
 
 // CONSTANT_NameAndType_info
 typedef struct {
@@ -68,7 +79,18 @@ typedef struct {
 typedef struct {
     uint8_t tag;
     union {
-
+        cf_cp_class class_info;
+        cf_cp_ref ref_info;
+        cf_cp_string string_info;
+        cf_cp_integer integer_info;
+        cf_cp_float float_info;
+        cf_cp_long long_info;
+        cf_cp_double double_info;
+        cf_cp_name_and_type name_and_type_info;
+        cf_cp_utf8 utf8_info;
+        cf_cp_method_handle method_handle_info;
+        cf_cp_method_type method_type_info;
+        cf_cp_invoke_dynamic invoke_dynamic_info;
     } data;
 } cf_cp_info;
 
