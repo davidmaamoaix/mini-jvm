@@ -59,11 +59,16 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     }
 
     E_HANDLE(sr_read_2(reader, &file->access_flags), ret_val, FREE_CONST);
+    log_trace("Access flags: %u", file->access_flags);
     E_HANDLE(sr_read_2(reader, &file->this_class), ret_val, FREE_CONST);
+    log_trace("Class name index #%u", file->this_class);
     E_HANDLE(sr_read_2(reader, &file->super_class), ret_val, FREE_CONST);
+    log_trace("Super class index #%u", file->super_class);
 
     // Implemented interfaces.
     E_HANDLE(sr_read_2(reader, &file->interfaces_count), ret_val, FREE_CONST);
+    log_debug("Interfaces count: %u", file->interfaces_count);
+
     file->interfaces = malloc(file->interfaces_count * sizeof(uint16_t));
     E_MEM_HANDLE(file->interfaces, ret_val, FREE_CONST);
     for (uint16_t i = 0; i < file->interfaces_count; i++) {
@@ -73,6 +78,8 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
 
     // Fields.
     E_HANDLE(sr_read_2(reader, &file->fields_count), ret_val, FREE_INTERFACES);
+    log_debug("Fields count: %u", file->fields_count);
+
     file->fields = malloc(file->fields_count * sizeof(cf_field_info));
     E_MEM_HANDLE(file->fields, ret_val, FREE_INTERFACES);
     for (uint16_t i = 0; i < file->fields_count; i++) {
@@ -82,6 +89,8 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
 
     // Methods.
     E_HANDLE(sr_read_2(reader, &file->methods_count), ret_val, FREE_FIELDS);
+    log_debug("Methods count: %u", file->methods_count);
+
     file->methods = malloc(file->methods_count * sizeof(cf_method_info));
     E_MEM_HANDLE(file->methods, ret_val, FREE_FIELDS);
     for (uint16_t i = 0; i < file->methods_count; i++) {
@@ -90,9 +99,12 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     }
 
     // Attributes.
-    E_HANDLE(sr_read_2(reader, &file->attributes_count), ret_val, FREE_METHODS);
-    err_vm sig =
-        sr_read_attrs(reader, file->attributes_count, &file->attributes);
+    uint16_t attrs_count;
+    E_HANDLE(sr_read_2(reader, &attrs_count), ret_val, FREE_METHODS);
+    log_debug("Attributes count: %u", attrs_count);
+
+    file->attributes_count = attrs_count;
+    err_vm sig = sr_read_attrs(reader, attrs_count, &file->attributes);
     E_HANDLE(sig, ret_val, FREE_METHODS);
 
     goto END;
