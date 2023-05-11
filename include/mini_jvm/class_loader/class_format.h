@@ -27,24 +27,22 @@ typedef struct {
 
 // CONSTANT_Integer_info
 typedef struct {
-    uint32_t bytes;
+    int32_t value;
 } cf_cp_integer;
 
 // CONSTANT_Float_info
 typedef struct {
-    uint32_t bytes;
+    float value;
 } cf_cp_float;
 
 // CONSTANT_Long_info
 typedef struct {
-    uint32_t high_bytes;
-    uint32_t low_bytes;
+    int64_t value;
 } cf_cp_long;
 
 // CONSTANT_Double_info
 typedef struct {
-    uint32_t high_bytes;
-    uint32_t low_bytes;
+    double value;
 } cf_cp_double;
 
 // CONSTANT_NameAndType_info
