@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 // Field `access_flags`.
 #define F_ACC_PUBLIC                0x0001
 #define F_ACC_FINAL                 0x0010
@@ -39,3 +41,8 @@
 #define CONSTANT_MethodHandle       15
 #define CONSTANT_MethodType         16
 #define CONSTANT_InvokeDynamic      18
+
+#define CP_INVALID "Invalid"
+
+extern const char *cp_names[19];
+const char *cp_get_name(uint8_t tag);

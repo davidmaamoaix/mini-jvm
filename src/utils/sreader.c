@@ -55,5 +55,6 @@ err_vm sr_read_bytes(sreader *reader, uint32_t size, uint8_t *val) {
         return E_EOFL;
 
     memcpy(val, reader->bytes + reader->curr, size * sizeof(uint8_t));
+    reader->curr += size;
     return E_SUCC;
 }

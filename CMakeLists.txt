@@ -22,6 +22,7 @@ add_compile_definitions(LOG_USE_COLOR)
 # The code for `mini-jvm` is built into the `mini-jvm-lib` library before
 # linking an executable target for it.
 add_library(mini_jvm_lib
+    src/class_loader/class_flags.c
     src/class_loader/class_format.c
     src/class_loader/class_reader.c
     src/utils/file_io.c

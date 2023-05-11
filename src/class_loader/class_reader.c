@@ -7,14 +7,24 @@
 #include "mini_jvm/utils/file_io.h"
 
 err_vm cr_read_cls_file(const char *path, cf_cls_file *file) {
-    log_debug("Reading class file %s\n", path);
+    log_debug("Reading class file %s", path);
     err_vm ret_val = E_SUCC;
 
     sreader reader;
     reader.curr = 0;
 
     E_PROP(f_read_bytes(path, &reader.end, &reader.bytes));
+    log_debug("Size of %s: %u bytes", path, reader.end);
+    log_debug("Parsing class file %s", path);
     E_HANDLE(sr_read_cls_file(&reader, file), ret_val, FREE_READER);
+
+    if (reader.curr != reader.end) {
+        log_error("File not fully consumed: %u/%u", reader.curr, reader.end);
+        ret_val = E_EOFL;
+        goto FREE_READER;
+    }
+
+    log_debug("%s successfully parsed", path);
 
     goto END;
 
@@ -28,24 +38,30 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     err_vm ret_val = E_SUCC;
 
     E_PROP(sr_read_4(reader, &file->magic));
+    log_trace("Magic number 0x%X", file->magic);
+
     E_PROP(sr_read_2(reader, &file->minor_version));
     E_PROP(sr_read_2(reader, &file->major_version));
+    log_trace("Version %d.%d", file->major_version, file->minor_version);
 
     // Constant pool.
     // Constant pool starts at index 1.
-    E_PROP(sr_read_2(reader, &file->constant_pool_count));
-    file->constant_pool =
-        malloc(file->constant_pool_count * sizeof(cf_cp_info));
+    uint16_t cp_size;
+    E_PROP(sr_read_2(reader, &cp_size));
+    log_debug("Constant pool size: %u", cp_size);
+
+    file->constant_pool_count = cp_size;
+    file->constant_pool = malloc(cp_size * sizeof(cf_cp_info));
     E_MEM_PROP(file->constant_pool);
     for (uint16_t i = 1; i < file->constant_pool_count; i++) {
-        err_vm sig = sr_read_cp_info(reader, file->constant_pool + i);
+        err_vm sig = sr_read_cp_info(reader, file->constant_pool + i, &i);
         E_HANDLE(sig, ret_val, FREE_CONST);
     }
-    
+
     E_HANDLE(sr_read_2(reader, &file->access_flags), ret_val, FREE_CONST);
     E_HANDLE(sr_read_2(reader, &file->this_class), ret_val, FREE_CONST);
     E_HANDLE(sr_read_2(reader, &file->super_class), ret_val, FREE_CONST);
-    
+
     // Implemented interfaces.
     E_HANDLE(sr_read_2(reader, &file->interfaces_count), ret_val, FREE_CONST);
     file->interfaces = malloc(file->interfaces_count * sizeof(uint16_t));
@@ -93,9 +109,14 @@ END:
     return ret_val;
 }
 
-err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
+/* `uint16_t *iter` is a pointer to the accumulating index when looping through
+ * the constant pool. This is needed because some entry would change the
+ * accumulation of the index (e.g., `CONSTANT_Long_info` and
+ * `CONSTANT_Double_info` takes up 2 entries).*/
+err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info, uint16_t *iter) {
     err_vm ret_val = E_SUCC;
     E_PROP(sr_read_1(reader, &info->tag));
+    log_trace("Index %u: %s", *iter, cp_get_name(info->tag));
 
     switch (info->tag) {
     case CONSTANT_Utf8: {
@@ -108,7 +129,6 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
 
         err_vm sig = sr_read_bytes(reader, length, info->data.utf8_info.bytes);
         E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);
-
         goto UTF8_END;
 
     UTF8_FREE_BYTES:
@@ -136,6 +156,7 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
         uint64_t value = 0;
         E_PROP(sr_read_8(reader, &value));
         info->data.long_info.value = (int64_t)value;
+        ++*iter;
         break;
     }
 
@@ -143,6 +164,7 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
         uint64_t value = 0;
         E_PROP(sr_read_8(reader, &value));
         info->data.double_info.value = *((double *)&value);
+        ++*iter;
         break;
     }
 
@@ -176,6 +198,7 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
         uint16_t *ref_idx_ptr = &info->data.method_handle_info.reference_index;
         E_PROP(sr_read_1(reader, ref_kind_ptr));
         E_PROP(sr_read_2(reader, ref_idx_ptr));
+        break;
     }
 
     case CONSTANT_MethodType: {
