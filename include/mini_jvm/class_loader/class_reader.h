@@ -4,6 +4,8 @@
 #include "mini_jvm/error/err_vm.h"
 #include "mini_jvm/utils/sreader.h"
 
+err_vm cr_read_cls_file(const char *path, cf_cls_file *file);
+
 err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file);
 err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info);
 err_vm sr_read_attribute_info(sreader *reader, cf_attribute_info *info);

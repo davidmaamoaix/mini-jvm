@@ -1,14 +1,13 @@
 #include <stdio.h>
 
+#include "mini_jvm/class_loader/class_format.h"
+#include "mini_jvm/class_loader/class_reader.h"
 #include "mini_jvm/utils/file_io.h"
 #include "mini_jvm/utils/sreader.h"
 
 int main() {
-    sreader reader;
-    reader.curr = 0;
+    cf_cls_file file;
+    err_vm read_sig = cr_read_cls_file("Cows.class", &file);
 
-    err_vm sig = f_read_bytes("Cows.class", &reader.end, &reader.bytes);
-    if (sig == -1) printf("Wat\n");
-
-    printf("Hello World: %u\n", reader.end);
+    printf("Signal: %d\n", read_sig);
 }

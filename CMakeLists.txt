@@ -6,6 +6,19 @@ set(CMAKE_C_STANDARD 99)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
 
+# The logging library from https://github.com/rxi/log.c.
+add_library(logging_lib
+    src/log.c
+)
+
+target_include_directories(logging_lib
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+add_compile_definitions(LOG_USE_COLOR)
+
 # The code for `mini-jvm` is built into the `mini-jvm-lib` library before
 # linking an executable target for it.
 add_library(mini_jvm_lib
@@ -22,7 +35,7 @@ target_include_directories(mini_jvm_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_link_libraries(mini_jvm_lib PkgConfig::GLIB)
+target_link_libraries(mini_jvm_lib PkgConfig::GLIB logging_lib)
 
 # Executable target for `mini-jvm`.
 add_executable(mini_jvm src/main.c)

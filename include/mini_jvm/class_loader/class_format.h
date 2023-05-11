@@ -12,83 +12,83 @@
 // CONSTANT_Class
 typedef struct {
     uint16_t name_index;
-} cf_cp_class;
+} cp_class;
 
 // CONSTANT_Fieldref, CONSTANT_Methodref, CONSTANT_InterfaceMethodref
 typedef struct {
     uint16_t class_index;
     uint16_t name_and_type_index;
-} cf_cp_ref;
+} cp_ref;
 
 // CONSTANT_String_info
 typedef struct {
     uint16_t string_index;
-} cf_cp_string;
+} cp_string;
 
 // CONSTANT_Integer_info
 typedef struct {
     int32_t value;
-} cf_cp_integer;
+} cp_integer;
 
 // CONSTANT_Float_info
 typedef struct {
     float value;
-} cf_cp_float;
+} cp_float;
 
 // CONSTANT_Long_info
 typedef struct {
     int64_t value;
-} cf_cp_long;
+} cp_long;
 
 // CONSTANT_Double_info
 typedef struct {
     double value;
-} cf_cp_double;
+} cp_double;
 
 // CONSTANT_NameAndType_info
 typedef struct {
     uint16_t name_index;
     uint16_t descriptor_index;
-} cf_cp_name_and_type;
+} cp_name_and_type;
 
 // CONSTANT_Utf8_info
 typedef struct {
     uint32_t length;
     uint8_t *bytes;
-} cf_cp_utf8;
+} cp_utf8;
 
 // CONSTANT_MethodHandle_info
 typedef struct {
     uint8_t reference_kind;
     uint16_t reference_index;
-} cf_cp_method_handle;
+} cp_method_handle;
 
 // CONSTANT_MethodType_info
 typedef struct {
     uint16_t descriptor_index;
-} cf_cp_method_type;
+} cp_method_type;
 
 // CONSTANT_InvokeDynamic_info
 typedef struct {
     uint16_t bootstrap_method_attr_index;
     uint16_t name_and_type_index;
-} cf_cp_invoke_dynamic;
+} cp_invoke_dynamic;
 
 typedef struct {
     uint8_t tag;
     union {
-        cf_cp_class class_info;
-        cf_cp_ref ref_info;
-        cf_cp_string string_info;
-        cf_cp_integer integer_info;
-        cf_cp_float float_info;
-        cf_cp_long long_info;
-        cf_cp_double double_info;
-        cf_cp_name_and_type name_and_type_info;
-        cf_cp_utf8 utf8_info;
-        cf_cp_method_handle method_handle_info;
-        cf_cp_method_type method_type_info;
-        cf_cp_invoke_dynamic invoke_dynamic_info;
+        cp_class class_info;
+        cp_ref ref_info;
+        cp_string string_info;
+        cp_integer integer_info;
+        cp_float float_info;
+        cp_long long_info;
+        cp_double double_info;
+        cp_name_and_type name_and_type_info;
+        cp_utf8 utf8_info;
+        cp_method_handle method_handle_info;
+        cp_method_type method_type_info;
+        cp_invoke_dynamic invoke_dynamic_info;
     } data;
 } cf_cp_info;
 

@@ -2,7 +2,27 @@
 
 #include <stdlib.h>
 
+#include "logging/log.h"
 #include "mini_jvm/class_loader/class_flags.h"
+#include "mini_jvm/utils/file_io.h"
+
+err_vm cr_read_cls_file(const char *path, cf_cls_file *file) {
+    log_debug("Reading class file %s\n", path);
+    err_vm ret_val = E_SUCC;
+
+    sreader reader;
+    reader.curr = 0;
+
+    E_PROP(f_read_bytes(path, &reader.end, &reader.bytes));
+    E_HANDLE(sr_read_cls_file(&reader, file), ret_val, FREE_READER);
+
+    goto END;
+
+FREE_READER:
+    free(reader.bytes);
+END:
+    return ret_val;
+}
 
 err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     err_vm ret_val = E_SUCC;
@@ -21,11 +41,11 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
         err_vm sig = sr_read_cp_info(reader, file->constant_pool + i);
         E_HANDLE(sig, ret_val, FREE_CONST);
     }
-
+    
     E_HANDLE(sr_read_2(reader, &file->access_flags), ret_val, FREE_CONST);
     E_HANDLE(sr_read_2(reader, &file->this_class), ret_val, FREE_CONST);
     E_HANDLE(sr_read_2(reader, &file->super_class), ret_val, FREE_CONST);
-
+    
     // Implemented interfaces.
     E_HANDLE(sr_read_2(reader, &file->interfaces_count), ret_val, FREE_CONST);
     file->interfaces = malloc(file->interfaces_count * sizeof(uint16_t));
@@ -79,8 +99,8 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
 
     switch (info->tag) {
     case CONSTANT_Utf8: {
-        uint32_t length;
-        E_PROP(sr_read_4(reader, &length));
+        uint16_t length;
+        E_PROP(sr_read_2(reader, &length));
 
         info->data.utf8_info.length = length;
         info->data.utf8_info.bytes = malloc(length * sizeof(uint8_t));
@@ -152,9 +172,9 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
     }
 
     case CONSTANT_MethodHandle: {
-        uint16_t *ref_kind_ptr = &info->data.method_handle_info.reference_kind;
+        uint8_t *ref_kind_ptr = &info->data.method_handle_info.reference_kind;
         uint16_t *ref_idx_ptr = &info->data.method_handle_info.reference_index;
-        E_PROP(sr_read_2(reader, ref_kind_ptr));
+        E_PROP(sr_read_1(reader, ref_kind_ptr));
         E_PROP(sr_read_2(reader, ref_idx_ptr));
     }
 
