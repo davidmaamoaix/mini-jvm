@@ -7,9 +7,8 @@ int main() {
     sreader reader;
     reader.curr = 0;
 
-    int64_t size = f_read_bytes("Cows.class", &reader.bytes);
-    if (size == -1) printf("Wat\n");
-    reader.end = (uint32_t) size;
+    err_vm sig = f_read_bytes("Cows.class", &reader.end, &reader.bytes);
+    if (sig == -1) printf("Wat\n");
 
     printf("Hello World: %u\n", reader.end);
 }

@@ -9,9 +9,10 @@ pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
 # The code for `mini-jvm` is built into the `mini-jvm-lib` library before
 # linking an executable target for it.
 add_library(mini_jvm_lib
+    src/class_loader/class_format.c
     src/class_loader/class_reader.c
-    src/utils/sreader.c
     src/utils/file_io.c
+    src/utils/sreader.c
 )
 
 target_include_directories(mini_jvm_lib

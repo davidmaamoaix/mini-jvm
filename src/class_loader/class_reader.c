@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 err_vm sr_read_cls_file(sreader *reader, cls_file *file) {
-    err_vm ret_val = E_SUC;
+    err_vm ret_val = E_SUCC;
 
     E_PROP(sr_read_4(reader, &file->magic));
     E_PROP(sr_read_2(reader, &file->minor_version));
@@ -71,13 +71,13 @@ END:
 }
 
 err_vm sr_read_cp_info(sreader *reader, cp_info *info) {
-    err_vm ret_val = E_SUC;
+    err_vm ret_val = E_SUCC;
 
     return ret_val;
 }
 
 err_vm sr_read_attribute_info(sreader *reader, attribute_info *info) {
-    err_vm ret_val = E_SUC;
+    err_vm ret_val = E_SUCC;
 
     E_PROP(sr_read_2(reader, &info->attribute_name_index));
     E_PROP(sr_read_4(reader, &info->attribute_length));
@@ -95,7 +95,7 @@ END:
 }
 
 err_vm sr_read_attribs(sreader *reader, uint16_t size, attribute_info **list) {
-    err_vm ret_val = E_SUC;
+    err_vm ret_val = E_SUCC;
 
     *list = malloc(size * sizeof(attribute_info));
     E_MEM_PROP(*list);
@@ -121,7 +121,7 @@ err_vm sr_read_field_info(sreader *reader, field_info *info) {
         sr_read_attribs(reader, info->attributes_count, &info->attributes);
     E_PROP(sig);
 
-    return E_SUC;
+    return E_SUCC;
 }
 
 err_vm sr_read_method_info(sreader *reader, method_info *info) {
@@ -133,5 +133,5 @@ err_vm sr_read_method_info(sreader *reader, method_info *info) {
         sr_read_attribs(reader, info->attributes_count, &info->attributes);
     E_PROP(sig);
 
-    return E_SUC;
+    return E_SUCC;
 }

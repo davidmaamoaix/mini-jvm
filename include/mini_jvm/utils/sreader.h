@@ -4,7 +4,7 @@
 
 #include "mini_jvm/error/err_vm.h"
 
-typedef struct sreader {
+typedef struct {
     uint8_t *bytes;
     uint32_t curr;
     uint32_t end;

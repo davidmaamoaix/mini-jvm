@@ -3,30 +3,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// TODO: refractor this shit pile, 11pm coding is bad for ya
-int64_t f_read_bytes(const char *filename, uint8_t **buffer) {
-    int64_t size;
-    FILE *file = fopen(filename, "rb");
+#include "mini_jvm/error/err_vm.h"
 
-    if (file == NULL) {
-        size = -1;
-        goto END;
-    }
+err_vm f_read_bytes(const char *filename, uint32_t *size, uint8_t **buffer) {
+    err_vm ret_val = E_SUCC;
+
+    FILE *file = fopen(filename, "rb");
+    if (file == NULL)
+        return E_NOFD;
 
     fseek(file, 0, SEEK_END);
-    size = ftell(file);
+    *size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    *buffer = malloc(size);
-    if (buffer == NULL) {
-        printf("Malloc failed");
-        size = -1;
-        goto FREE_FILE;
-    }
+    *buffer = malloc(*size);
+    E_MEM_HANDLE(*buffer, ret_val, FREE_FILE);
 
-    size_t read = fread(*buffer, 1, size, file);
-    if (read < size) {
-        size = -1;
+    size_t read = fread(*buffer, 1, *size, file);
+    if (read < *size) {
+        ret_val = E_IOER;
         goto FREE_BUFFER;
     }
 
@@ -37,5 +32,5 @@ FREE_BUFFER:
 FREE_FILE:
     fclose(file);
 END:
-    return size;
+    return ret_val;
 }

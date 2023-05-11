@@ -1,19 +1,20 @@
 #pragma once
 
+#include <stdio.h>
 #include <stdint.h>
 
-typedef struct cp_info {
+typedef struct {
     uint8_t tag;
     uint8_t *info;
 } cp_info;
 
-typedef struct attribute_info {
+typedef struct {
     uint16_t attribute_name_index;
     uint32_t attribute_length;
     uint8_t *info;
 } attribute_info;
 
-typedef struct field_info {
+typedef struct {
     uint16_t access_flags;
     uint16_t name_index;
     uint16_t descriptor_index;
@@ -22,7 +23,7 @@ typedef struct field_info {
     attribute_info *attributes;
 } field_info;
 
-typedef struct method_info {
+typedef struct {
     uint16_t access_flags;
     uint16_t name_index;
     uint16_t descriptor_index;
@@ -31,7 +32,7 @@ typedef struct method_info {
     attribute_info *attributes;
 } method_info;
 
-typedef struct cls_file {
+typedef struct {
     uint32_t magic;
     uint16_t minor_version;
     uint16_t major_version;
@@ -55,3 +56,5 @@ typedef struct cls_file {
     uint16_t attributes_count;
     attribute_info *attributes;
 } cls_file;
+
+void print_class_file(cls_file *file, FILE *output);
