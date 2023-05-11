@@ -2,12 +2,13 @@
 
 // Somewhat similar to C's error codes, but actually quite different.
 typedef enum {
-    E_SUCC = 0, // No error.
-    E_PERM = 1, // No permission.
-    E_NOFD = 2, // No such file or directory.
-    E_EOFL = 3, // End of file.
-    E_IOER = 5, // IO Error.
-    E_NMEM = 12 // Out of memory.
+    E_SUCC = 0,  // No error.
+    E_PERM = 1,  // No permission.
+    E_NOFD = 2,  // No such file or directory.
+    E_EOFL = 3,  // End of file.
+    E_IOER = 5,  // IO Error.
+    E_NMEM = 12, // Out of memory.
+    E_IBTC = 13  // Invalid bytecode.
 } err_vm;
 
 // Checks memory allocation with error propagation.
@@ -18,7 +19,7 @@ typedef enum {
 // Checls memory allocation and handles it with `goto` and sets `ret_val`.
 #define E_MEM_HANDLE(val, ret_val, label)                                      \
     if (val == NULL) {                                                         \
-        ret_val = E_NMEM;                                                       \
+        ret_val = E_NMEM;                                                      \
         goto label;                                                            \
     }
 

@@ -16,7 +16,7 @@ err_vm f_read_bytes(const char *filename, uint32_t *size, uint8_t **buffer) {
     *size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    *buffer = malloc(*size);
+    *buffer = malloc(*size * sizeof(uint8_t));
     E_MEM_HANDLE(*buffer, ret_val, FREE_FILE);
 
     size_t read = fread(*buffer, 1, *size, file);

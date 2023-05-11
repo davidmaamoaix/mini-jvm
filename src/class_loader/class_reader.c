@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 
+#include "mini_jvm/class_loader/class_flags.h"
+
 err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     err_vm ret_val = E_SUCC;
 
@@ -12,7 +14,8 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     // Constant pool.
     // Constant pool starts at index 1.
     E_PROP(sr_read_2(reader, &file->constant_pool_count));
-    file->constant_pool = malloc(file->constant_pool_count * sizeof(cf_cp_info));
+    file->constant_pool =
+        malloc(file->constant_pool_count * sizeof(cf_cp_info));
     E_MEM_PROP(file->constant_pool);
     for (uint16_t i = 1; i < file->constant_pool_count; i++) {
         err_vm sig = sr_read_cp_info(reader, file->constant_pool + i);
@@ -72,6 +75,98 @@ END:
 
 err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info) {
     err_vm ret_val = E_SUCC;
+    E_PROP(sr_read_1(reader, &info->tag));
+
+    switch (info->tag) {
+    case CONSTANT_Utf8: {
+        uint32_t length;
+        E_PROP(sr_read_4(reader, &length));
+
+        info->data.utf8_info.length = length;
+        info->data.utf8_info.bytes = malloc(length * sizeof(uint8_t));
+        E_MEM_PROP(info->data.utf8_info.bytes);
+
+        err_vm sig = sr_read_bytes(reader, length, info->data.utf8_info.bytes);
+        E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);
+
+        goto UTF8_END;
+
+    UTF8_FREE_BYTES:
+        free(info->data.utf8_info.bytes);
+    UTF8_END:
+        break;
+    }
+
+    // TODO: simplify this part by passing in `&blah.value` directly.
+    case CONSTANT_Integer: {
+        uint32_t value = 0;
+        E_PROP(sr_read_4(reader, &value));
+        info->data.integer_info.value = (int32_t)value;
+        break;
+    }
+
+    case CONSTANT_Float: {
+        uint32_t value = 0;
+        E_PROP(sr_read_4(reader, &value));
+        info->data.float_info.value = *((float *)&value);
+        break;
+    }
+
+    case CONSTANT_Long: {
+        uint64_t value = 0;
+        E_PROP(sr_read_8(reader, &value));
+        info->data.long_info.value = (int64_t)value;
+        break;
+    }
+
+    case CONSTANT_Double: {
+        uint64_t value = 0;
+        E_PROP(sr_read_8(reader, &value));
+        info->data.double_info.value = *((double *)&value);
+        break;
+    }
+
+    case CONSTANT_Class: {
+        break;
+    }
+
+    case CONSTANT_String: {
+        break;
+    }
+
+    case CONSTANT_Fieldref: {
+        break;
+    }
+
+    case CONSTANT_Methodref: {
+        break;
+    }
+    
+    case CONSTANT_InterfaceMethodref: {
+        break;
+    }
+
+    case CONSTANT_NameAndType: {
+        break;
+    }
+
+    case CONSTANT_MethodHandle: {
+        break;
+    }
+
+    case CONSTANT_MethodType: {
+        break;
+    }
+
+    case CONSTANT_InvokeDynamic: {
+        break;
+    }
+
+    default: {
+        ret_val = E_IBTC;
+        break;
+    }
+    }
 
     return ret_val;
 }

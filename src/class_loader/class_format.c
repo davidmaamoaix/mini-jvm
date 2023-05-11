@@ -2,6 +2,6 @@
 
 #include <stdio.h>
 
-void print_class_file(cls_file *file, FILE *output) {
+void print_class_file(cf_cls_file *file, FILE *output) {
     
 }
