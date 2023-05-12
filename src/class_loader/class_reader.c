@@ -51,7 +51,7 @@ err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file) {
     log_debug("Constant pool size: %u", cp_size);
 
     file->constant_pool_count = cp_size;
-    file->constant_pool = malloc(cp_size * sizeof(cf_cp_info));
+    file->constant_pool = malloc(cp_size * sizeof(cp_info));
     E_MEM_PROP(file->constant_pool);
     for (uint16_t i = 1; i < file->constant_pool_count; i++) {
         err_vm sig = sr_read_cp_info(reader, file->constant_pool + i, &i);
@@ -125,7 +125,7 @@ END:
  * the constant pool. This is needed because some entry would change the
  * accumulation of the index (e.g., `CONSTANT_Long_info` and
  * `CONSTANT_Double_info` takes up 2 entries).*/
-err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info, uint16_t *iter) {
+err_vm sr_read_cp_info(sreader *reader, cp_info *info, uint16_t *iter) {
     err_vm ret_val = E_SUCC;
     E_PROP(sr_read_1(reader, &info->tag));
     log_trace("Index %u: %s", *iter, cp_get_name(info->tag));
@@ -135,16 +135,16 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info, uint16_t *iter) {
         uint16_t length;
         E_PROP(sr_read_2(reader, &length));
 
-        info->data.utf8_info.length = length;
-        info->data.utf8_info.bytes = malloc(length * sizeof(uint8_t));
-        E_MEM_PROP(info->data.utf8_info.bytes);
+        info->data.utf8.length = length;
+        info->data.utf8.bytes = malloc(length * sizeof(uint8_t));
+        E_MEM_PROP(info->data.utf8.bytes);
 
-        err_vm sig = sr_read_bytes(reader, length, info->data.utf8_info.bytes);
+        err_vm sig = sr_read_bytes(reader, length, info->data.utf8.bytes);
         E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);
         goto UTF8_END;
 
     UTF8_FREE_BYTES:
-        free(info->data.utf8_info.bytes);
+        free(info->data.utf8.bytes);
     UTF8_END:
         break;
     }
@@ -153,21 +153,21 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info, uint16_t *iter) {
     case CONSTANT_Integer: {
         uint32_t value = 0;
         E_PROP(sr_read_4(reader, &value));
-        info->data.integer_info.value = (int32_t)value;
+        info->data.integer.value = (int32_t)value;
         break;
     }
 
     case CONSTANT_Float: {
         uint32_t value = 0;
         E_PROP(sr_read_4(reader, &value));
-        info->data.float_info.value = *((float *)&value);
+        info->data.float_.value = *((float *)&value);
         break;
     }
 
     case CONSTANT_Long: {
         uint64_t value = 0;
         E_PROP(sr_read_8(reader, &value));
-        info->data.long_info.value = (int64_t)value;
+        info->data.long_.value = (int64_t)value;
         ++*iter;
         break;
     }
@@ -175,54 +175,54 @@ err_vm sr_read_cp_info(sreader *reader, cf_cp_info *info, uint16_t *iter) {
     case CONSTANT_Double: {
         uint64_t value = 0;
         E_PROP(sr_read_8(reader, &value));
-        info->data.double_info.value = *((double *)&value);
+        info->data.double_.value = *((double *)&value);
         ++*iter;
         break;
     }
 
     case CONSTANT_Class: {
-        E_PROP(sr_read_2(reader, &info->data.class_info.name_index));
+        E_PROP(sr_read_2(reader, &info->data.class.name_index));
         break;
     }
 
     case CONSTANT_String: {
-        E_PROP(sr_read_2(reader, &info->data.string_info.string_index));
+        E_PROP(sr_read_2(reader, &info->data.string.string_index));
         break;
     }
 
     case CONSTANT_Fieldref:
     case CONSTANT_Methodref:
     case CONSTANT_InterfaceMethodref: {
-        E_PROP(sr_read_2(reader, &info->data.ref_info.class_index));
-        E_PROP(sr_read_2(reader, &info->data.ref_info.name_and_type_index));
+        E_PROP(sr_read_2(reader, &info->data.ref.class_index));
+        E_PROP(sr_read_2(reader, &info->data.ref.name_and_type_index));
         break;
     }
 
     case CONSTANT_NameAndType: {
-        E_PROP(sr_read_2(reader, &info->data.name_and_type_info.name_index));
-        uint16_t *desc_ptr = &info->data.name_and_type_info.descriptor_index;
+        E_PROP(sr_read_2(reader, &info->data.name_and_type.name_index));
+        uint16_t *desc_ptr = &info->data.name_and_type.descriptor_index;
         E_PROP(sr_read_2(reader, desc_ptr));
         break;
     }
 
     case CONSTANT_MethodHandle: {
-        uint8_t *ref_kind_ptr = &info->data.method_handle_info.reference_kind;
-        uint16_t *ref_idx_ptr = &info->data.method_handle_info.reference_index;
+        uint8_t *ref_kind_ptr = &info->data.method_handle.reference_kind;
+        uint16_t *ref_idx_ptr = &info->data.method_handle.reference_index;
         E_PROP(sr_read_1(reader, ref_kind_ptr));
         E_PROP(sr_read_2(reader, ref_idx_ptr));
         break;
     }
 
     case CONSTANT_MethodType: {
-        uint16_t *desc_ptr = &info->data.method_type_info.descriptor_index;
+        uint16_t *desc_ptr = &info->data.method_type.descriptor_index;
         E_PROP(sr_read_2(reader, desc_ptr));
         break;
     }
 
     case CONSTANT_InvokeDynamic: {
         uint16_t *attr_ptr =
-            &info->data.invoke_dynamic_info.bootstrap_method_attr_index;
-        uint16_t *tp_ptr = &info->data.invoke_dynamic_info.name_and_type_index;
+            &info->data.invoke_dynamic.bootstrap_method_attr_index;
+        uint16_t *tp_ptr = &info->data.invoke_dynamic.name_and_type_index;
         E_PROP(sr_read_2(reader, attr_ptr));
         E_PROP(sr_read_2(reader, tp_ptr));
         break;

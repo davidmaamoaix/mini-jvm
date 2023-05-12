@@ -7,7 +7,7 @@
 err_vm cr_read_cls_file(const char *path, cf_cls_file *file);
 
 err_vm sr_read_cls_file(sreader *reader, cf_cls_file *file);
-err_vm sr_read_cp_info(sreader *reader, cf_cp_info *inf, uint16_t *iter);
+err_vm sr_read_cp_info(sreader *reader, cp_info *inf, uint16_t *iter);
 err_vm sr_read_attribute_info(sreader *reader, cf_attribute_info *info);
 err_vm sr_read_attrs(sreader *reader, uint16_t size, cf_attribute_info **list);
 err_vm sr_read_field_info(sreader *reader, cf_field_info *info);

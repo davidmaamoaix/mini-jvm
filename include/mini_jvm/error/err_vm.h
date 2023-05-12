@@ -8,7 +8,8 @@ typedef enum {
     E_EOFL = 3,  // End of file.
     E_IOER = 5,  // IO Error.
     E_NMEM = 12, // Out of memory.
-    E_IBTC = 13  // Invalid bytecode.
+    E_IBTC = 13, // Invalid bytecode.
+    E_ICFE = 14  // Corrupted class file.
 } err_vm;
 
 // Checks memory allocation with error propagation.

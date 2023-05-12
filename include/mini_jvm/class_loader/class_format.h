@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/* While the `cf_cp_info` contents in the constant pool all share similar byte
+/* While the `cp_info` contents in the constant pool all share similar byte
  * format and therefore can be easily merged into a single union with two
  * branches, I feel like writing them out explicitly grants more readability
  * (all following structs with the prefix `cf_cp_`). After all this is just a
@@ -74,23 +74,25 @@ typedef struct {
     uint16_t name_and_type_index;
 } cp_invoke_dynamic;
 
+/* `cp_info` is used directly in the constant pool, thus the lack of `cf_`
+ * prefix in its name.*/
 typedef struct {
     uint8_t tag;
     union {
-        cp_class class_info;
-        cp_ref ref_info;
-        cp_string string_info;
-        cp_integer integer_info;
-        cp_float float_info;
-        cp_long long_info;
-        cp_double double_info;
-        cp_name_and_type name_and_type_info;
-        cp_utf8 utf8_info;
-        cp_method_handle method_handle_info;
-        cp_method_type method_type_info;
-        cp_invoke_dynamic invoke_dynamic_info;
+        cp_class class;
+        cp_ref ref;
+        cp_string string;
+        cp_integer integer;
+        cp_float float_;
+        cp_long long_;
+        cp_double double_;
+        cp_name_and_type name_and_type;
+        cp_utf8 utf8;
+        cp_method_handle method_handle;
+        cp_method_type method_type;
+        cp_invoke_dynamic invoke_dynamic;
     } data;
-} cf_cp_info;
+} cp_info;
 
 typedef struct {
     uint16_t attribute_name_index;
@@ -122,7 +124,7 @@ typedef struct {
     uint16_t major_version;
 
     uint16_t constant_pool_count;
-    cf_cp_info *constant_pool;
+    cp_info *constant_pool;
 
     uint16_t access_flags;
     uint16_t this_class;
