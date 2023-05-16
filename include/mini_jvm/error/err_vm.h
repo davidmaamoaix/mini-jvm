@@ -41,3 +41,19 @@ typedef enum {
             goto label;                                                        \
         }                                                                      \
     } while (0)
+
+// Asserts and propagates.
+#define E_ASSERT_PROP(exp, err)                                                \
+    do {                                                                       \
+        if (!(exp))                                                            \
+            return err;                                                        \
+    } while (0)
+
+// Asserts and handles.
+#define E_ASSERT_HANDLE(exp, err, ret_val, label)                              \
+    do {                                                                       \
+        if (!(exp)) {                                                          \
+            ret_val = err;                                                     \
+            goto label;                                                        \
+        }                                                                      \
+    } while (0)

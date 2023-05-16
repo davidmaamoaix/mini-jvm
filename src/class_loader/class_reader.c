@@ -139,6 +139,7 @@ err_vm sr_read_cp_info(sreader *reader, cp_info *info, uint16_t *iter) {
         info->data.utf8.bytes = malloc(length * sizeof(uint8_t));
         E_MEM_PROP(info->data.utf8.bytes);
         info->data.utf8.bytes[length] = '\0';
+        printf("%s\n", info->data.utf8.bytes);
 
         err_vm sig = sr_read_bytes(reader, length, info->data.utf8.bytes);
         E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);
