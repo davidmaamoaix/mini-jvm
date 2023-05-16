@@ -5,6 +5,7 @@
 #include "logging/log.h"
 #include "mini_jvm/class_loader/class_flags.h"
 #include "mini_jvm/utils/file_io.h"
+#include "mini_jvm/utils/string_format.h"
 
 err_vm cr_read_cls_file(const char *path, cf_cls_file *file) {
     log_debug("Reading class file %s", path);
@@ -139,7 +140,9 @@ err_vm sr_read_cp_info(sreader *reader, cp_info *info, uint16_t *iter) {
         info->data.utf8.bytes = malloc(length * sizeof(uint8_t));
         E_MEM_PROP(info->data.utf8.bytes);
         info->data.utf8.bytes[length] = '\0';
-        printf("%s\n", info->data.utf8.bytes);
+
+        uint8_t *out_str;
+        E_PROP(sf_decode_utf8(info->data.utf8.length, info->data.utf8.bytes, &out_str));
 
         err_vm sig = sr_read_bytes(reader, length, info->data.utf8.bytes);
         E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);

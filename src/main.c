@@ -7,7 +7,7 @@
 #include "mini_jvm/utils/sreader.h"
 
 int main() {
-    log_set_level(LOG_DEBUG);
+    // log_set_level(LOG_DEBUG);
 
     cf_cls_file file;
     err_vm read_sig = cr_read_cls_file("Cows.class", &file);
