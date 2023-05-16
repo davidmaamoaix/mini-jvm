@@ -136,16 +136,18 @@ err_vm sr_read_cp_info(sreader *reader, cp_info *info, uint16_t *iter) {
         uint16_t length;
         E_PROP(sr_read_2(reader, &length));
 
-        info->data.utf8.length = length + 1;
-        info->data.utf8.bytes = malloc(length * sizeof(uint8_t));
-        E_MEM_PROP(info->data.utf8.bytes);
-        info->data.utf8.bytes[length] = '\0';
+        uint16_t term_length = length + 1;
+        uint8_t *term_str = malloc(term_length * sizeof(uint8_t));
+        E_MEM_PROP(term_str);
 
-        uint8_t *out_str;
-        E_PROP(sf_decode_utf8(info->data.utf8.length, info->data.utf8.bytes, &out_str));
-
-        err_vm sig = sr_read_bytes(reader, length, info->data.utf8.bytes);
+        err_vm sig = sr_read_bytes(reader, length, term_str);
         E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);
+
+        term_str[length] = '\0';
+        
+        uint8_t *out_str;
+        E_PROP(sf_decode_utf8(term_length, term_str, &out_str));
+
         goto UTF8_END;
 
     UTF8_FREE_BYTES:
