@@ -15,7 +15,7 @@ err_vm cp_expect(c_pool *cp, uint16_t index, uint8_t type, cp_info *ret_val) {
     return E_SUCC;
 }
 
-err_vm cp_get_class_name(c_pool *cp, uint16_t index, uint8_t **ret_val) {
+err_vm cp_get_class_name(c_pool *cp, uint16_t index, UChar **ret_val) {
     cp_info class;
     cp_info utf8;
     E_PROP(cp_expect(cp, index, CONSTANT_Class, &class));

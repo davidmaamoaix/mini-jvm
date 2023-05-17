@@ -1,8 +1,10 @@
 #pragma once
 
 #include <stdint.h>
+#include <unicode/ustring.h>
 
 #include "mini_jvm/error/err_vm.h"
+#include "mini_jvm/class_loader/class_format.h"
 
 // String format byte masks.
 #define SF_HIGH_1 0b10000000
@@ -30,4 +32,4 @@
     (0x10000 + (((v)&0b00001111) << 16) + (((w)&0b00111111) << 10) +           \
      (((y)&0b00001111) << 6) + ((z)&0b00111111))
 
-err_vm sf_decode_utf8(uint16_t size, uint8_t *bytes, uint8_t **out_str);
+err_vm sf_decode_utf8(uint16_t size, uint8_t *bytes, cp_utf8 *str_info);

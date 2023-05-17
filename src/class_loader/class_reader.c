@@ -1,6 +1,8 @@
 #include "mini_jvm/class_loader/class_reader.h"
 
 #include <stdlib.h>
+#include <unicode/ustring.h>
+#include <unicode/ustdio.h>
 
 #include "logging/log.h"
 #include "mini_jvm/class_loader/class_flags.h"
@@ -142,11 +144,10 @@ err_vm sr_read_cp_info(sreader *reader, cp_info *info, uint16_t *iter) {
 
         err_vm sig = sr_read_bytes(reader, length, term_str);
         E_HANDLE(sig, ret_val, UTF8_FREE_BYTES);
-
         term_str[length] = '\0';
         
-        uint8_t *out_str;
-        E_PROP(sf_decode_utf8(term_length, term_str, &out_str));
+        E_PROP(sf_decode_utf8(term_length, term_str, &info->data.utf8));
+        // u_printf("Decoded UTF-8: %S\n", info->data.utf8.bytes);
 
         goto UTF8_END;
 

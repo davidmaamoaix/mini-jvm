@@ -4,7 +4,7 @@ project(mini_jvm VERSION 0.1.0)
 set(CMAKE_C_STANDARD 99)
 
 find_package(PkgConfig REQUIRED)
-find_package(ICU COMPONENTS uc REQUIRED)
+find_package(ICU COMPONENTS uc io REQUIRED)
 pkg_check_modules(GLIB REQUIRED IMPORTED_TARGET glib-2.0)
 
 # The logging library from https://github.com/rxi/log.c.
@@ -42,7 +42,7 @@ target_include_directories(mini_jvm_lib
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_link_libraries(mini_jvm_lib PkgConfig::GLIB logging_lib ICU::uc)
+target_link_libraries(mini_jvm_lib PkgConfig::GLIB logging_lib ICU::uc ICU::io)
 
 # Executable target for `mini-jvm`.
 add_executable(mini_jvm src/main.c)

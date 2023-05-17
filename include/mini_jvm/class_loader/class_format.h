@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <unicode/ustring.h>
 
 /* While the `cp_info` contents in the constant pool all share similar byte
  * format and therefore can be easily merged into a single union with two
@@ -53,8 +54,8 @@ typedef struct {
 
 // CONSTANT_Utf8_info
 typedef struct {
-    uint32_t length;
-    uint8_t *bytes;
+    uint16_t length;
+    UChar *bytes;
 } cp_utf8;
 
 // CONSTANT_MethodHandle_info
