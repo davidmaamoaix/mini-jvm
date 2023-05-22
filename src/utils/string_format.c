@@ -75,7 +75,7 @@ err_vm sf_decode_utf8(uint16_t size, uint8_t *bytes, cp_utf8 *str_info) {
         goto FREE_STR;
     }
 
-    str_info->length = (uint16_t) out_size;
+    str_info->length = out_size;
     str_info->bytes = out_str;
 
     goto END;

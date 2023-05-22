@@ -23,10 +23,12 @@ typedef struct {
     uint16_t access_flags;
     cp_pool cpool; // Constant Pool.
 
-    UChar *cls_path;
-    co_cls_obj *parent_cls;
+    cp_utf8 *cls_path;
+    cp_utf8 *parent_cls;
 
     GHashTable *interfaces;
     GHashTable *fields;
     GHashTable *methods;
 } co_cls_obj;
+
+err_vm co_load_cls_obj(co_cls_obj *cls, cf_cls_file *file);

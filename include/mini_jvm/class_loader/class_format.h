@@ -54,7 +54,10 @@ typedef struct {
 
 // CONSTANT_Utf8_info
 typedef struct {
-    uint16_t length;
+    /* 32-bit integer is needed as the max size of a constant string is a 15-bit
+     * integer, but due to `UChar`'s encoding the actual size may exceed that.
+     */
+    uint32_t length;
     UChar *bytes;
 } cp_utf8;
 
@@ -144,4 +147,5 @@ typedef struct {
     cf_attribute_info *attributes;
 } cf_cls_file;
 
+err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src);
 void print_class_file(cf_cls_file *file, FILE *output);

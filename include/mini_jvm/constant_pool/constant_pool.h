@@ -8,4 +8,4 @@ typedef struct {
     cp_info *pool;
 } cp_pool;
 
-err_vm cp_load_from_cls_file(cf_cls_file *file, cp_pool *cp);
+err_vm cp_load_from_cls_file(cp_pool *cp, cf_cls_file *file);
