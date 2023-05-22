@@ -21,7 +21,7 @@ typedef struct {
 
 typedef struct {
     uint16_t access_flags;
-    cp_pool cpool; // Constant Pool.
+    GPtrArray *cpool; // Constant Pool.
 
     cp_utf8 *cls_path;
     cp_utf8 *parent_cls;

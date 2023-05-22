@@ -1,6 +1,6 @@
 #include "mini_jvm/class_loader/class_format.h"
 
-#include <stdio.h>
+#include <stdlib.h>
 
 #include "mini_jvm/error/err_vm.h"
 

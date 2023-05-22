@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <unicode/ustring.h>
 
+#include "mini_jvm/error/err_vm.h"
+
 /* While the `cp_info` contents in the constant pool all share similar byte
  * format and therefore can be easily merged into a single union with two
  * branches, I feel like writing them out explicitly grants more readability

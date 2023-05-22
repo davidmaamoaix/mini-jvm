@@ -1,5 +1,7 @@
 #pragma once
 
+#include "logging/log.h"
+
 // Somewhat similar to C's error codes, but actually quite different.
 typedef enum {
     E_SUCC = 0,  // No error.
@@ -15,12 +17,15 @@ typedef enum {
 
 // Checks memory allocation with error propagation.
 #define E_MEM_PROP(val)                                                        \
-    if (val == NULL)                                                           \
-        return E_NMEM;
+    if (val == NULL) {                                                         \
+        log_fatal("Memory allocation failed!");                                \
+        return E_NMEM;                                                         \
+    }
 
 // Checls memory allocation and handles it with `goto` and sets `ret_val`.
 #define E_MEM_HANDLE(val, ret_val, label)                                      \
     if (val == NULL) {                                                         \
+        log_fatal("Memory allocation failed!");                                \
         ret_val = E_NMEM;                                                      \
         goto label;                                                            \
     }
