@@ -17,12 +17,12 @@ err_vm cp_expect(GPtrArray *cp, uint16_t id, uint8_t type, cp_info *out) {
     return E_SUCC;
 }
 
-err_vm cp_get_class_name(GPtrArray *cp, uint16_t id, UChar **out) {
+err_vm cp_get_class_name(GPtrArray *cp, uint16_t id, cp_utf8 *out) {
     cp_info class;
     cp_info utf8;
     E_PROP(cp_expect(cp, id, CONSTANT_Class, &class));
     E_PROP(cp_expect(cp, class.data.class.name_index, CONSTANT_Utf8, &utf8));
 
-    *out = utf8.data.utf8.bytes;
+    *out = utf8.data.utf8;
     return E_SUCC;
 }

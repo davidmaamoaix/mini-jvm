@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <unicode/ustdio.h>
 #include <unicode/ustring.h>
 
 #include "mini_jvm/error/err_vm.h"
@@ -150,4 +151,5 @@ typedef struct {
 } cf_cls_file;
 
 err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src);
-void print_class_file(cf_cls_file *file, FILE *output);
+void cf_fprint_cp_utf8(cp_utf8 *str, UFILE *output);
+void cf_fprint_cls_obj(co_cls_obj *obj, UFILE *output);

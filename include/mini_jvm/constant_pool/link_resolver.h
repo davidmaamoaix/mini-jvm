@@ -8,4 +8,4 @@
 #include "mini_jvm/error/err_vm.h"
 
 err_vm cp_expect(GPtrArray *cp, uint16_t id, uint8_t type, cp_info *out);
-err_vm cp_get_class_name(GPtrArray *cp, uint16_t id, UChar **out);
+err_vm cp_get_class_name(GPtrArray *cp, uint16_t id, cp_utf8 *out);

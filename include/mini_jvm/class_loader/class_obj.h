@@ -23,8 +23,8 @@ typedef struct {
     uint16_t access_flags;
     GPtrArray *cpool; // Constant Pool.
 
-    cp_utf8 *cls_path;
-    cp_utf8 *parent_cls;
+    cp_utf8 cls_path;
+    cp_utf8 sup_cls;
 
     GHashTable *interfaces;
     GHashTable *fields;
