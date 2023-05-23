@@ -8,13 +8,13 @@
 
 err_vm cp_expect(GPtrArray *cp, uint16_t id, uint8_t type, cp_info *out) {
     if (id >= cp->len || id == 0) {
-        log_error("Invalid constant pool");
+        log_error("Invalid constant pool: invalid index");
         return E_ICFE;
     }
     
     cp_info *entry = g_ptr_array_index(cp, id);
     if (entry->tag != type) {
-        log_error("Invalid constant pool");
+        log_error("Invalid constant pool: unexpected type");
         return E_ICFE;
     }
 
