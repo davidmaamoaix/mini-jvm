@@ -18,11 +18,3 @@ err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src) {
 END:
     return ret_val;
 }
-
-void cf_fprint_cp_utf8(cp_utf8 *str, UFILE *output) {
-    u_fprintf(output, "%S", str);
-}
-
-void cf_fprint_cls_obj(co_cls_obj *obj, UFILE *output) {
-    
-}

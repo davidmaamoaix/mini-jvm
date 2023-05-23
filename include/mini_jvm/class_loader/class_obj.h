@@ -20,6 +20,9 @@ typedef struct {
 } co_field_obj;
 
 typedef struct {
+    uint16_t minor_version;
+    uint16_t major_version;
+
     uint16_t access_flags;
     GPtrArray *cpool; // Constant Pool.
 
@@ -32,3 +35,5 @@ typedef struct {
 } co_cls_obj;
 
 err_vm co_load_cls_obj(co_cls_obj *cls, cf_cls_file *file);
+void cf_fprint_cp_utf8(cp_utf8 *str, UFILE *output);
+err_vm cf_fprint_cls_obj(co_cls_obj *obj, FILE *output);

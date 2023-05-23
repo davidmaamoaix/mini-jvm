@@ -1,16 +1,30 @@
 #pragma once
 
 #include <stdint.h>
+#include <unicode/ustdio.h>
+
+// Class `access_flags`.
+#define C_ACC_PUBLIC     0x0001
+#define C_ACC_FINAL      0x0010
+#define C_ACC_SUPER      0x0020
+#define C_ACC_INTERFACE  0x0200
+#define C_ACC_ABSTRACT   0x0400
+#define C_ACC_SYNTHETIC  0x1000
+#define C_ACC_ANNOTATION 0x2000
+#define C_ACC_ENUM       0x4000
+
+void c_sprint_flags(uint16_t value, char *out);
 
 // Field `access_flags`.
-#define F_ACC_PUBLIC     0x0001
-#define F_ACC_FINAL      0x0010
-#define F_ACC_SUPER      0x0020
-#define F_ACC_INTERFACE  0x0200
-#define F_ACC_ABSTRACT   0x0400
-#define F_ACC_SYNTHETIC  0x1000
-#define F_ACC_ANNOTATION 0x2000
-#define F_ACC_ENUM       0x4000
+#define F_ACC_PUBLIC    0x0001
+#define F_ACC_PRIVATE   0x0002
+#define F_ACC_PROTECTED 0x0004
+#define F_ACC_STATIC    0x0008
+#define F_ACC_FINAL     0x0010
+#define F_ACC_VOLATILE  0x0040
+#define F_ACC_TRANSIENT 0x0080
+#define F_ACC_SYNTHETIC 0x1000
+#define F_ACC_ENUM      0x4000
 
 // Method `access_flags`.
 #define M_ACC_PUBLIC       0x0001

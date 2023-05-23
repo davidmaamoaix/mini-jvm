@@ -151,5 +151,3 @@ typedef struct {
 } cf_cls_file;
 
 err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src);
-void cf_fprint_cp_utf8(cp_utf8 *str, UFILE *output);
-void cf_fprint_cls_obj(co_cls_obj *obj, UFILE *output);

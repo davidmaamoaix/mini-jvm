@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unicode/ustdio.h>
 
 #include "logging/log.h"
 #include "mini_jvm/class_loader/class_format.h"
@@ -17,4 +18,8 @@ int main() {
     co_cls_obj obj;
     err_vm load_sig = co_load_cls_obj(&obj, &file);
     printf("Load Signal: %d\n", load_sig);
+
+    err_vm print_sig = cf_fprint_cls_obj(&obj, stdout);
+
+    printf("Print Signal: %d\n", print_sig);
 }
