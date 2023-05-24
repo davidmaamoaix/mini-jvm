@@ -35,5 +35,8 @@ typedef struct {
 } co_cls_obj;
 
 err_vm co_load_cls_obj(co_cls_obj *cls, cf_cls_file *file);
+
 err_vm co_fprint_name_type(UFILE *out, GPtrArray *cp, cp_name_and_type *entry);
+err_vm co_fprint_constant_pool(UFILE *out, co_cls_obj *obj);
+err_vm co_fprintf_fields(UFILE *out, co_cls_obj *obj);
 err_vm co_fprint_cls_obj(co_cls_obj *obj, FILE *output);

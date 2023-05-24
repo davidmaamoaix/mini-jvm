@@ -61,23 +61,8 @@ END:
     return ret_val;
 }
 
-err_vm co_fprint_cls_obj(co_cls_obj *obj, FILE *output) {
+err_vm co_fprint_constant_pool(UFILE *out, co_cls_obj *obj) {
     err_vm ret_val = E_SUCC;
-    UFILE *out = u_finit(output, NULL, NULL);
-
-    // Access level header.
-    if (obj->access_flags & C_ACC_PUBLIC) {
-        u_fprintf(out, "public ");
-    }
-
-    u_fprintf(out, "class %S\n", obj->cls_path.bytes);
-    u_fprintf(out, "  minor version: %d\n", obj->minor_version);
-    u_fprintf(out, "  major version: %d\n", obj->major_version);
-    
-    u_fprintf(out, "  flags: ");
-    char flags[256];
-    c_sprint_flags(obj->access_flags, flags);
-    u_fprintf(out, "%s\n", flags);
 
     u_fprintf(out, "Constant pool:\n");
     bool skip = false;
@@ -237,6 +222,45 @@ err_vm co_fprint_cls_obj(co_cls_obj *obj, FILE *output) {
 
         u_fprintf(out, "\n");
     }
+
+END:
+    return ret_val;
+}
+
+err_vm co_fprintf_fields(UFILE *out, co_cls_obj *obj) {
+    err_vm ret_val = E_SUCC;
+
+    
+
+END:
+    return ret_val;
+}
+
+err_vm co_fprint_cls_obj(co_cls_obj *obj, FILE *output) {
+    err_vm ret_val = E_SUCC;
+    UFILE *out = u_finit(output, NULL, NULL);
+
+    // Access level header.
+    if (obj->access_flags & C_ACC_PUBLIC) {
+        u_fprintf(out, "public ");
+    }
+
+    u_fprintf(out, "class %S\n", obj->cls_path.bytes);
+    u_fprintf(out, "  minor version: %d\n", obj->minor_version);
+    u_fprintf(out, "  major version: %d\n", obj->major_version);
+    
+    u_fprintf(out, "  flags: ");
+    char flags[256];
+    c_sprint_flags(obj->access_flags, flags);
+    u_fprintf(out, "%s\n", flags);
+
+    E_HANDLE(co_fprint_constant_pool(out, obj), ret_val, END);
+
+    u_fprintf(out, "{\n");
+    co_fprintf_fields(out, obj);
+
+
+    u_fprintf(out, "}\n");
 
 END:
     return ret_val;
