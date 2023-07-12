@@ -3,7 +3,6 @@
 #include <glib.h>
 #include <unicode/ustring.h>
 
-#include "mini_jvm/class_loader/class_format.h"
 #include "mini_jvm/constant_pool/constant_pool.h"
 #include "mini_jvm/error/err_vm.h"
 

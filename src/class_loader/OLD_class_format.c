@@ -1,11 +1,11 @@
-#include "mini_jvm/class_loader/class_format.h"
+/*#include "mini_jvm/class_loader/class_format.h"
 
 #include <stdlib.h>
 #include <unicode/ustring.h>
 #include <unicode/ustdio.h>
 
 #include "mini_jvm/error/err_vm.h"
-#include "mini_jvm/class_loader/class_obj.h"
+#include "mini_jvm/class_loader/class.h"
 
 err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src) {
     err_vm ret_val = E_SUCC;
@@ -18,3 +18,4 @@ err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src) {
 END:
     return ret_val;
 }
+*/

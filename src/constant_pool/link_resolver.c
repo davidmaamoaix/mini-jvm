@@ -4,6 +4,7 @@
 
 #include "logging/log.h"
 #include "mini_jvm/class_loader/class_flags.h"
+#include "mini_jvm/class_loader/class_format.h"
 #include "mini_jvm/error/err_vm.h"
 
 err_vm cp_expect(GPtrArray *cp, uint16_t id, uint8_t type, cp_info *out) {

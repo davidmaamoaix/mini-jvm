@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include <stdint.h>
 #include <stdio.h>
@@ -124,3 +124,31 @@ typedef struct {
     uint16_t attributes_count;
     cf_attribute_info *attributes;
 } cf_method_info;
+
+typedef struct {
+    uint32_t magic;
+    uint16_t minor_version;
+    uint16_t major_version;
+
+    uint16_t constant_pool_count;
+    cp_info *constant_pool;
+
+    uint16_t access_flags;
+    uint16_t this_class;
+    uint16_t super_class;
+
+    uint16_t interfaces_count;
+    uint16_t *interfaces;
+
+    uint16_t fields_count;
+    cf_field_info *fields;
+
+    uint16_t methods_count;
+    cf_method_info *methods;
+
+    uint16_t attributes_count;
+    cf_attribute_info *attributes;
+} cf_cls_file;
+
+err_vm cf_copy_cp_utf8(cp_utf8 *dest, cp_utf8 *src);
+*/

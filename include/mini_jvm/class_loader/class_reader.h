@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mini_jvm/class_loader/class_format.h"
+#include "mini_jvm/class_loader/class.h"
 #include "mini_jvm/error/err_vm.h"
 #include "mini_jvm/utils/sreader.h"
 

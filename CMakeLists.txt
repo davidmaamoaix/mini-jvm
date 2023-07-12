@@ -24,9 +24,7 @@ add_compile_definitions(LOG_USE_COLOR)
 # linking an executable target for it.
 add_library(mini_jvm_lib
     src/class_loader/class_flags.c
-    src/class_loader/class_format.c
-    src/class_loader/class_obj.c
-    src/class_loader/class_reader.c
+    src/class_loader/class.c
     src/constant_pool/constant_pool.c
     src/constant_pool/link_resolver.c
     src/kernel/class_pool.c

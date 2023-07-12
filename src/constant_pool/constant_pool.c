@@ -4,18 +4,17 @@
 #include <glib.h>
 
 #include "mini_jvm/class_loader/class_flags.h"
-#include "mini_jvm/class_loader/class_format.h"
 
-void free_cp_entry(gpointer data) {
+/* void free_cp_entry(gpointer data) {
     cp_info *entry = (cp_info *)data;
     if (entry->tag == CONSTANT_Utf8) {
         free(entry->data.utf8.bytes);
     }
 
     free(entry);
-}
+}*/
 
-err_vm cp_load_from_cls_file(GPtrArray **cp, cf_cls_file *file) {
+/*err_vm cp_load_from_cls_file(GPtrArray **cp, cf_cls_file *file) {
     err_vm ret_val = E_SUCC;
 
     *cp = g_ptr_array_new_with_free_func(free_cp_entry);
@@ -41,4 +40,4 @@ FREE_CPOOL:
     g_ptr_array_free(*cp, true);
 END:
     return ret_val;
-}
+}*/
